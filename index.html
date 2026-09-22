@@ -338,7 +338,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs,
-  updateDoc, increment, serverTimestamp
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {"apiKey": "AIzaSyClLRBPEGGM0G8KXKoRvzxQgq1ybQ6lGRY", "authDomain": "gens202-eda67.firebaseapp.com", "databaseURL": "https://gens202-eda67-default-rtdb.firebaseio.com", "projectId": "gens202-eda67", "storageBucket": "gens202-eda67.firebasestorage.app", "messagingSenderId": "201068898058", "appId": "1:201068898058:web:1ef7d6d09bf74555bc3cf3", "measurementId": "G-XMW0HC9MZP"};
@@ -426,53 +426,163 @@ $("loginForm").addEventListener("submit", async e=>{
   finally{btn.disabled=false;btn.textContent="Login to portal";}
 });
 
+let registrationInProgress = false;
+
 $("registerForm").addEventListener("submit", async e=>{
-  e.preventDefault(); setMessage("registerMsg","");
-  const btn=e.submitter; btn.disabled=true; btn.textContent="Creating account…";
+  e.preventDefault();
+  setMessage("registerMsg","");
+  const btn=e.submitter;
+  btn.disabled=true;
+  btn.textContent="Creating account…";
+  registrationInProgress=true;
+
   try{
     const name=$("regName").value.trim();
     const email=$("regEmail").value.trim();
     const password=$("regPassword").value;
     const enteredRef=$("refCode").value.trim().toUpperCase();
+
+    // 1. Create the Firebase Authentication account first.
     const cred=await createUserWithEmailAndPassword(auth,email,password);
     await updateProfile(cred.user,{displayName:name});
-    const referralCode=await uniqueReferralCode();
 
-    let referredBy="";
-    if(enteredRef){
-      const q=query(collection(db,"users"),where("referralCode","==",enteredRef));
-      const snap=await getDocs(q);
-      if(!snap.empty && snap.docs[0].id !== cred.user.uid){
-        referredBy=snap.docs[0].id;
-        await updateDoc(doc(db,"users",snap.docs[0].id),{totalreferral:increment(1)});
-      }
+    // 2. Generate this student's own referral code.
+    //    If code generation fails, the account itself should still be usable.
+    let referralCode = randomCode();
+    try{
+      referralCode = await uniqueReferralCode();
+    }catch(codeErr){
+      console.warn("Referral code generation fallback:",codeErr);
     }
 
+    // 3. IMPORTANT: create the student's own users document before doing
+    //    anything with the optional referral. This prevents the dashboard
+    //    from depending on another user's document being writable.
     await setDoc(doc(db,"users",cred.user.uid),{
-      name,email,referralCode,referredBy,totalreferral:0,created:serverTimestamp()
+      name,
+      email,
+      referralCode,
+      referredBy:"",
+      totalreferral:0,
+      created:serverTimestamp()
     });
-  }catch(err){ setMessage("registerMsg",friendlyError(err)); }
-  finally{btn.disabled=false;btn.textContent="Create student account";}
+
+    // 4. The account is now complete. Let the auth listener/dashboard open.
+    registrationInProgress=false;
+    renderDashboard();
+    showView("dashboardView");
+    btn.disabled=false;
+    btn.textContent="Create student account";
+    setMessage("registerMsg","");
+
+    // 5. Referral handling is OPTIONAL and NEVER allowed to block account
+    //    creation/dashboard access. A valid code creates a separate referral
+    //    document instead of editing the referrer's users document.
+    if(enteredRef && enteredRef !== referralCode){
+      try{
+        const q=query(
+          collection(db,"users"),
+          where("referralCode","==",enteredRef)
+        );
+        const snap=await getDocs(q);
+
+        if(!snap.empty && snap.docs[0].id !== cred.user.uid){
+          const referrerId=snap.docs[0].id;
+          await setDoc(doc(collection(db,"referrals")),{
+            referrerId:referrerId,
+            referrerCode:enteredRef,
+            referredId:cred.user.uid,
+            referredEmail:email,
+            created:serverTimestamp()
+          });
+
+          // Keep the local dashboard data consistent. Referral count itself
+          // is always calculated from the referrals collection.
+          await loadReferralCount();
+        }
+      }catch(refErr){
+        console.warn("Referral processing skipped:",refErr);
+      }
+    }
+  }catch(err){
+    registrationInProgress=false;
+    setMessage("registerMsg",friendlyError(err));
+  }finally{
+    btn.disabled=false;
+    btn.textContent="Create student account";
+  }
 });
 
 $("logoutBtn").onclick=()=>signOut(auth);
 
 onAuthStateChanged(auth, async user=>{
-  if(!user){ currentUser=null; userData=null; stopTimer(); showView("authView"); return; }
+  if(!user){
+    currentUser=null;
+    userData=null;
+    stopTimer();
+    showView("authView");
+    return;
+  }
+
   currentUser=user;
+
+  // During registration, the registration handler controls when the
+  // dashboard opens. This avoids a race between Auth and Firestore.
+  if(registrationInProgress) return;
+
   try{
-    const snap=await getDoc(doc(db,"users",user.uid));
-    userData=snap.exists()?snap.data():{name:user.displayName||"Student",email:user.email,referralCode:"-----",totalreferral:0};
-    renderDashboard();
+    let snap=null;
+    for(let attempt=0;attempt<3;attempt++){
+      snap=await getDoc(doc(db,"users",user.uid));
+      if(snap.exists()) break;
+      await new Promise(resolve=>setTimeout(resolve,300));
+    }
+
+    userData=snap?.exists()
+      ? snap.data()
+      : {
+          name:user.displayName||"Student",
+          email:user.email,
+          referralCode:"-----",
+          totalreferral:0
+        };
+
+    await renderDashboard();
     showView("dashboardView");
-  }catch(err){ toast("Could not load your dashboard."); }
+  }catch(err){
+    console.error("Dashboard load error:",err);
+    toast("Could not load your dashboard. Please refresh and try again.");
+  }
 });
 
-function renderDashboard(){
+async function loadReferralCount(){
+  const code=userData?.referralCode;
+  if(!code || code === "-----"){
+    $("refCount").textContent="0";
+    return 0;
+  }
+
+  try{
+    const q=query(
+      collection(db,"referrals"),
+      where("referrerCode","==",code.toUpperCase())
+    );
+    const snap=await getDocs(q);
+    $("refCount").textContent=String(snap.size);
+    return snap.size;
+  }catch(err){
+    console.error("Referral count error:",err);
+    $("refCount").textContent="0";
+    return 0;
+  }
+}
+
+async function renderDashboard(){
   $("welcomeName").textContent=`Welcome, ${userData?.name || currentUser?.displayName || "Student"} 👋`;
   $("navUser").textContent=userData?.name || currentUser?.email || "";
-  $("refCount").textContent=userData?.totalreferral ?? 0;
   $("myCode").textContent=userData?.referralCode || "-----";
+  $("refCount").textContent="…";
+  await loadReferralCount();
 }
 
 function shuffle(arr){
