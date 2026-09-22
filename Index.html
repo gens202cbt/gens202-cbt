@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>GENS202 CBT Portal</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:Arial;background:#0f172a;color:white;padding:20px;text-align:center}
+.card{background:white;color:black;max-width:400px;margin:20px auto;padding:20px;border-radius:15px}
+input{width:90%;padding:12px;margin:8px;border-radius:8px;border:1px solid #ddd}
+button{background:#2563eb;color:white;padding:12px 20px;border:none;border-radius:8px;width:95%;font-weight:bold;cursor:pointer;margin:5px}
+#dash{display:none}
+.code{font-size:24px;font-weight:bold;color:#2563eb;letter-spacing:2px}
+</style>
+</head>
+<body>
+<h1>GENS202 CBT 2026</h1>
+<p>Refer & Earn Portal</p>
+
+<div class="card" id="auth">
+<h2>Register / Login</h2>
+<input id="name" placeholder="Full Name">
+<input id="email" placeholder="Email" type="email">
+<input id="pass" placeholder="Password" type="password">
+<input id="ref" placeholder="Referral Code (optional) - who referred you?">
+<button onclick="register()">Register</button>
+<button onclick="login()" style="background:#16a34a">Login</button>
+<p id="msg"></p>
+</div>
+
+<div class="card" id="dash">
+<h2>Welcome <span id="uname"></span>!</h2>
+<p>Your Referral Code:</p>
+<div class="code" id="mycode"></div>
+<p>Share this code to friends!</p>
+<hr>
+<h3>Total Referrals: <span id="total">0</span></h3>
+<p>Referred By: <span id="by">None</span></p>
+<button onclick="logout()" style="background:red">Logout</button>
+<button onclick="copyCode()">Copy My Code</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+// --- REPLACE WITH YOUR REAL CONFIG FROM FIREBASE CONSOLE ---
+const firebaseConfig = {
+  apiKey: "AIzaSyYOUR_KEY_HERE",
+  authDomain: "gens202-eda67.firebaseapp.com",
+  projectId: "gens202-eda67",
+  storageBucket: "gens202-eda67.appspot.com",
+  messagingSenderId: "YOUR_ID",
+  appId: "YOUR_APP_ID"
+};
+// To get config: Firebase Console > Project Settings > General > Your Apps > Web App > Config
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+function genCode(){
+  return Math.random().toString(36).substring(2,8).toUpperCase();
+}
+
+window.register = async () => {
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const pass = document.getElementById('pass').value;
+  const referredBy = document.getElementById('ref').value.trim();
+  const msg = document.getElementById('msg');
+  if(!name||!email||!pass){msg.innerText="Fill all";return}
+  try{
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    const myreferralcode = genCode();
+    await setDoc(doc(db, "Users", cred.user.uid), {
+      name, email, myreferralcode, referredBy: referredBy||"", totalreferral: 0,
+      createdAt: new Date()
+    });
+    if(referredBy){
+      const q = query(collection(db,"Users"), where("myreferralcode","==",referredBy));
+      const snap = await getDocs(q);
+      snap.forEach(async d=>{
+        await updateDoc(doc(db,"Users",d.id), {totalreferral: increment(1)});
+      });
+    }
+    msg.innerText="Registered! Please login.";
+  }catch(e){msg.innerText=e.message}
+}
+
+window.login = async () => {
+  const email = document.getElementById('email').value;
+  const pass = document.getElementById('pass').value;
+  try{ await signInWithEmailAndPassword(auth,email,pass); }
+  catch(e){ document.getElementById('msg').innerText=e.message }
+}
+
+window.logout = () => signOut(auth);
+window.copyCode = () => { navigator.clipboard.writeText(document.getElementById('mycode').innerText); alert("Copied!") }
+
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    const snap = await getDoc(doc(db,"Users",user.uid));
+    if(snap.exists()){
+      const d = snap.data();
+      document.getElementById('auth').style.display="none";
+      document.getElementById('dash').style.display="block";
+      document.getElementById('uname').innerText=d.name;
+      document.getElementById('mycode').innerText=d.myreferralcode;
+      document.getElementById('total').innerText=d.totalreferral;
+      document.getElementById('by').innerText=d.referredBy||"None";
+    }
+  }else{
+    document.getElementById('auth').style.display="block";
+    document.getElementById('dash').style.display="none";
+  }
+});
+</script>
+</body>
+</html>
