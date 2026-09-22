@@ -1,49 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>GENS202 CBT Portal</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+here<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GENS202 CBT 2026</title>
 <style>
-body{font-family:Arial;background:#0f172a;color:white;padding:20px;text-align:center}
-.card{background:white;color:black;max-width:400px;margin:20px auto;padding:20px;border-radius:15px}
-input{width:90%;padding:12px;margin:8px;border-radius:8px;border:1px solid #ddd}
-button{background:#2563eb;color:white;padding:12px 20px;border:none;border-radius:8px;width:95%;font-weight:bold;cursor:pointer;margin:5px}
-#dash{display:none}
-.code{font-size:24px;font-weight:bold;color:#2563eb;letter-spacing:2px}
-</style>
-</head>
-<body>
-<h1>GENS202 CBT 2026</h1>
-<p>Refer & Earn Portal</p>
+body{font-family:Arial;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh;margin:0;padding:12px}
+.card{max-width:850px;margin:15px auto;background:#fff;padding:22px;border-radius:16px;box-shadow:0 8px 25px rgba(0,0,0,.2)}
+.tabs{display:flex;gap:10px;margin-bottom:18px}.tab{flex:1;padding:12px;text-align:center;border-radius:10px;cursor:pointer;background:#eee;font-weight:bold}.tab.active{background:#667eea;color:#fff}
+input{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}
+.btn{width:100%;padding:12px;background:#667eea;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;margin-top:10px}.btn-green{background:#28a745}.hidden{display:none}
+.opt{border:2px solid #eee;padding:13px;margin:9px 0;border-radius:10px;cursor:pointer}.opt.sel{background:#667eea;color:#fff;border-color:#667eea}
+#timer{float:right;color:red;font-weight:bold}
+</style></head><body>
 
-<div class="card" id="auth">
-<h2>Register / Login</h2>
-<input id="name" placeholder="Full Name">
-<input id="email" placeholder="Email" type="email">
-<input id="pass" placeholder="Password" type="password">
-<input id="ref" placeholder="Referral Code (optional)">
-<button onclick="register()">Register</button>
-<button onclick="login()" style="background:#16a34a">Login</button>
-<p id="msg"></p>
+<div class="card" id="authCard">
+<h2 style="text-align:center">GENS202 CBT 2026<br><small>Leaked Questions + Refer & Earn</small></h2>
+<div class="tabs"><div class="tab active" id="tabL" onclick="showTab('login')">Login</div><div class="tab" id="tabR" onclick="showTab('reg')">Register</div></div>
+<div id="loginForm"><input id="loginEmail" placeholder="Email" type="email"><input id="loginPass" placeholder="Password" type="password"><button class="btn" onclick="doLogin()">Login</button></div>
+<div id="regForm" class="hidden"><input id="regName" placeholder="Full Name"><input id="regEmail" placeholder="Email" type="email"><input id="regPass" placeholder="Password" type="password"><input id="regRef" placeholder="Referral Code (optional)"><button class="btn btn-green" onclick="doRegister()">Register</button></div>
+<p id="authMsg" style="color:red;text-align:center"></p>
 </div>
 
-<div class="card" id="dash">
-<h2>Welcome <span id="uname"></span>!</h2>
-<p>Your Referral Code:</p>
-<div class="code" id="mycode"></div>
-<p>Share this code!</p>
-<hr>
-<h3>Total Referrals: <span id="total">0</span></h3>
-<p>Referred By: <span id="by">None</span></p>
-<button onclick="logout()" style="background:red">Logout</button>
-<button onclick="copyCode()">Copy My Code</button>
-</div>
+<div class="card hidden" id="dashCard"><h3>Welcome <span id="dashName"></span> 👋</h3><p>Your Code: <b id="dashCode" style="background:yellow;padding:3px 8px;border-radius:5px"></b> | Referrals: <b id="dashCount">0</b></p><button class="btn btn-green" onclick="startExam()">Start Exam (40 from leaked)</button><button class="btn" onclick="doLogout()" style="background:#dc3545">Logout</button></div>
+
+<div class="card hidden" id="examCard"><h3>GENS202 Exam <span id="timer">30:00</span></h3><div id="qBox"></div><div style="display:flex;gap:10px"><button class="btn" onclick="prevQ()">Prev</button><button class="btn" onclick="nextQ()">Next</button></div><button class="btn btn-green" onclick="submitExam()">Submit</button></div>
+
+<div class="card hidden" id="resultCard"><h2 id="scoreText"></h2><div id="reviewBox"></div><button class="btn" onclick="location.reload()">Back</button></div>
+
+<script>
+const QUESTIONS = [
+{id:1,q:"Which is NOT characteristic of organization?",A:"Management provides guidance",B:"Rules communicated",C:"Personnel positions defined",D:"Allocation without planning",ans:"D"},
+{id:2,q:"What represents nature of organization?",A:"Subdivision based on seniority",B:"Allocation without suitability",C:"Positions at random",D:"Selection of suitable personnel",ans:"D"},
+{id:53,q:"Cultural values that influence entrepreneurship?",A:"Govt regulations",B:"Economic conditions",C:"Social values, religious beliefs, customs",D:"Access to raw materials",ans:"C"},
+{id:85,q:"How innovations improve life?",A:"Limiting choices",B:"Making life complicate",C:"Only essential goods",D:"Enriching lives, improving communication",ans:"D"},
+{id:185,q:"Technology is an accelerator means?",A:"Speeds decision",B:"End goal",C:"Accelerates success when used effectively",D:"Only bad ideas",ans:"C"},
+{id:186,q:"Musician and recording studio analogy?",A:"Become engineers",B:"Separate entities",C:"Focus core only",D:"Must communicate vision to experts",ans:"D"},
+];
+function showTab(t){document.getElementById('loginForm').classList.toggle('hidden',t!=='login');document.getElementById('regForm').classList.toggle('hidden',t!=='reg');document.getElementById('tabL').classList.toggle('active',t==='login');document.getElementById('tabR').classList.toggle('active',t==='reg');}
+</script>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,setDoc,getDoc,collection,query,where,getDocs,updateDoc,increment} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyClLRBPEGGM0G8KXKoRvzxQgq1ybQ6lGRY",
   authDomain: "gens202-eda67.firebaseapp.com",
@@ -54,62 +51,55 @@ const firebaseConfig = {
   appId: "1:201068898058:web:1ef7d6d09bf74555bc3cf3",
   measurementId: "G-XMW0HC9MZP"
 };
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-function genCode(){ return Math.random().toString(36).substring(2,8).toUpperCase(); }
-
-window.register = async () => {
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
-  const pass = document.getElementById('pass').value;
-  const referredBy = document.getElementById('ref').value.trim();
-  const msg = document.getElementById('msg');
-  if(!name||!email||!pass){msg.innerText="Fill all";return}
-  try{
-    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    const myreferralcode = genCode();
-    await setDoc(doc(db, "Users", cred.user.uid), {
-      name, email, myreferralcode, referredBy: referredBy||"", totalreferral: 0, createdAt: new Date()
-    });
-    if(referredBy){
-      const q = query(collection(db,"Users"), where("myreferralcode","==",referredBy));
-      const snap = await getDocs(q);
-      snap.forEach(async d=>{ await updateDoc(doc(db,"Users",d.id), {totalreferral: increment(1)}); });
-    }
-    msg.innerText="Registered! Now click Login.";
-  }catch(e){msg.innerText=e.message}
-}
-
-window.login = async () => {
-  const email = document.getElementById('email').value;
-  const pass = document.getElementById('pass').value;
-  try{ await signInWithEmailAndPassword(auth,email,pass); }
-  catch(e){ document.getElementById('msg').innerText=e.message }
-}
-
-window.logout = () => signOut(auth);
-window.copyCode = () => { navigator.clipboard.writeText(document.getElementById('mycode').innerText); alert("Copied!") }
-
-onAuthStateChanged(auth, async (user)=>{
-  if(user){
-    const snap = await getDoc(doc(db,"Users",user.uid));
-    if(snap.exists()){
-      const d = snap.data();
-      document.getElementById('auth').style.display="none";
-      document.getElementById('dash').style.display="block";
-      document.getElementById('uname').innerText=d.name;
-      document.getElementById('mycode').innerText=d.myreferralcode;
-      document.getElementById('total').innerText=d.totalreferral;
-      document.getElementById('by').innerText=d.referredBy||"None";
-    }
-  }else{
-    document.getElementById('auth').style.display="block";
-    document.getElementById('dash').style.display="none";
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+window.doRegister=async()=>{
+ const name=document.getElementById('regName').value;const email=document.getElementById('regEmail').value;const pass=document.getElementById('regPass').value;const ref=document.getElementById('regRef').value;const msg=document.getElementById('authMsg');
+ if(!name||!email||!pass){msg.innerText="Fill all fields";return}
+ try{
+  const cred=await createUserWithEmailAndPassword(auth,email,pass);
+  const code=Math.random().toString(36).substring(2,7).toUpperCase();
+  await setDoc(doc(db,"users",cred.user.uid),{name,email,referralCode:code,referredBy:ref||null,totalreferral:0,created:Date.now()});
+  if(ref){
+   try{
+    const q=query(collection(db,"users"),where("referralCode","==",ref));
+    const snap=await getDocs(q);
+    snap.forEach(async(d)=>{await updateDoc(doc(db,"users",d.id),{totalreferral:increment(1)});});
+   }catch(e){console.log(e)}
   }
+  msg.style.color="green";msg.innerText="Registered! Please login now";showTab('login');
+ }catch(e){msg.innerText=e.message}
+};
+window.doLogin=async()=>{
+ const email=document.getElementById('loginEmail').value;const pass=document.getElementById('loginPass').value;const msg=document.getElementById('authMsg');
+ try{await signInWithEmailAndPassword(auth,email,pass)}catch(e){msg.innerText=e.message}
+};
+window.doLogout=async()=>{await signOut(auth);location.reload();};
+onAuthStateChanged(auth,async(user)=>{
+ if(user){
+  document.getElementById('authCard').classList.add('hidden');
+  document.getElementById('dashCard').classList.remove('hidden');
+  try{
+   const snap=await getDoc(doc(db,"users",user.uid));
+   if(snap.exists()){
+    const d=snap.data();
+    document.getElementById('dashName').innerText=d.name||user.email;
+    document.getElementById('dashCode').innerText=d.referralCode||"---";
+    document.getElementById('dashCount').innerText=d.totalreferral||0;
+   }
+  }catch(e){}
+ }
 });
 </script>
-</body>
-</html>
+
+<script>
+let examQs=[],cur=0,answers={},timerInt,timeLeft=1800;
+function startExam(){examQs=[...QUESTIONS].sort(()=>0.5-Math.random()).slice(0,Math.min(40,QUESTIONS.length));cur=0;answers={};timeLeft=1800;document.getElementById('dashCard').classList.add('hidden');document.getElementById('examCard').classList.remove('hidden');timerInt=setInterval(()=>{timeLeft--;let m=Math.floor(timeLeft/60),s=timeLeft%60;document.getElementById('timer').innerText=`${m}:${s<10?'0'+s:s}`;if(timeLeft<=0)submitExam();},1000);showQ();}
+function showQ(){const q=examQs[cur];document.getElementById('qBox').innerHTML=`<p><b>Q${cur+1}/${examQs.length}:</b> ${q.q}</p><div class="opt" onclick="pick('A')"><b>A.</b> ${q.A}</div><div class="opt" onclick="pick('B')"><b>B.</b> ${q.B}</div><div class="opt" onclick="pick('C')"><b>C.</b> ${q.C}</div><div class="opt" onclick="pick('D')"><b>D.</b> ${q.D}</div>`;highlight();}
+function pick(o){answers[cur]=o;highlight();}
+function highlight(){document.querySelectorAll('.opt').forEach((el,i)=>{el.classList.remove('sel');const L=['A','B','C','D'];if(answers[cur]==L[i])el.classList.add('sel');});}
+function nextQ(){if(cur<examQs.length-1){cur++;showQ();}}
+function prevQ(){if(cur>0){cur--;showQ();}}
+function submitExam(){clearInterval(timerInt);let score=0;examQs.forEach((q,i)=>{if(answers[i]==q.ans)score++;});document.getElementById('examCard').classList.add('hidden');document.getElementById('resultCard').classList.remove('hidden');document.getElementById('scoreText').innerText=`Score: ${score}/${examQs.length} (${Math.round(score/examQs.length*100)}%)`;let rev="";examQs.forEach((q,i)=>{const ua=answers[i]||"No answer";const ok=ua==q.ans;rev+=`<div style="border:1px solid #ddd;padding:10px;margin:8px 0;border-radius:8px;background:${ok?'#d4edda':'#f8d7da'}"><b>Q${i+1}:</b> ${q.q}<br>Your: ${ua} | Correct: ${q.ans} ${ok?'✅':'❌'}</div>`;});document.getElementById('reviewBox').innerHTML=rev;}
+</script></body></html>
