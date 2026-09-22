@@ -21,7 +21,7 @@ button{background:#2563eb;color:white;padding:12px 20px;border:none;border-radiu
 <input id="name" placeholder="Full Name">
 <input id="email" placeholder="Email" type="email">
 <input id="pass" placeholder="Password" type="password">
-<input id="ref" placeholder="Referral Code (optional) - who referred you?">
+<input id="ref" placeholder="Referral Code (optional)">
 <button onclick="register()">Register</button>
 <button onclick="login()" style="background:#16a34a">Login</button>
 <p id="msg"></p>
@@ -31,7 +31,7 @@ button{background:#2563eb;color:white;padding:12px 20px;border:none;border-radiu
 <h2>Welcome <span id="uname"></span>!</h2>
 <p>Your Referral Code:</p>
 <div class="code" id="mycode"></div>
-<p>Share this code to friends!</p>
+<p>Share this code!</p>
 <hr>
 <h3>Total Referrals: <span id="total">0</span></h3>
 <p>Referred By: <span id="by">None</span></p>
@@ -44,24 +44,22 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// --- REPLACE WITH YOUR REAL CONFIG FROM FIREBASE CONSOLE ---
 const firebaseConfig = {
-  apiKey: "AIzaSyYOUR_KEY_HERE",
+  apiKey: "AIzaSyClLRBPEGGM0G8KXKoRvzxQgq1ybQ6lGRY",
   authDomain: "gens202-eda67.firebaseapp.com",
+  databaseURL: "https://gens202-eda67-default-rtdb.firebaseio.com",
   projectId: "gens202-eda67",
-  storageBucket: "gens202-eda67.appspot.com",
-  messagingSenderId: "YOUR_ID",
-  appId: "YOUR_APP_ID"
+  storageBucket: "gens202-eda67.firebasestorage.app",
+  messagingSenderId: "201068898058",
+  appId: "1:201068898058:web:1ef7d6d09bf74555bc3cf3",
+  measurementId: "G-XMW0HC9MZP"
 };
-// To get config: Firebase Console > Project Settings > General > Your Apps > Web App > Config
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-function genCode(){
-  return Math.random().toString(36).substring(2,8).toUpperCase();
-}
+function genCode(){ return Math.random().toString(36).substring(2,8).toUpperCase(); }
 
 window.register = async () => {
   const name = document.getElementById('name').value;
@@ -74,17 +72,14 @@ window.register = async () => {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     const myreferralcode = genCode();
     await setDoc(doc(db, "Users", cred.user.uid), {
-      name, email, myreferralcode, referredBy: referredBy||"", totalreferral: 0,
-      createdAt: new Date()
+      name, email, myreferralcode, referredBy: referredBy||"", totalreferral: 0, createdAt: new Date()
     });
     if(referredBy){
       const q = query(collection(db,"Users"), where("myreferralcode","==",referredBy));
       const snap = await getDocs(q);
-      snap.forEach(async d=>{
-        await updateDoc(doc(db,"Users",d.id), {totalreferral: increment(1)});
-      });
+      snap.forEach(async d=>{ await updateDoc(doc(db,"Users",d.id), {totalreferral: increment(1)}); });
     }
-    msg.innerText="Registered! Please login.";
+    msg.innerText="Registered! Now click Login.";
   }catch(e){msg.innerText=e.message}
 }
 
