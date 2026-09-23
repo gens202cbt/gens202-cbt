@@ -212,10 +212,9 @@
     <!-- FIREBASE & LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // Firebase Config[span_1](start_span)[span_1](end_span)
         const firebaseConfig = {
             apiKey: "AIzaSyClLRBPEGGM0G8KXKoRvzxQgq1ybQ6lGRY",
             authDomain: "gens202-eda67.firebaseapp.com",
@@ -252,16 +251,24 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const docRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    currentUserData = docSnap.data();
-                    document.getElementById('dash-name').innerText = `Welcome, ${currentUserData.name.split(' ')[0]}`;
-                    document.getElementById('dash-code').innerText = currentUserData.referralCode;
-                    document.getElementById('dash-ref-count').innerText = currentUserData.totalreferral || 0;
-                    showView('dashboard');
+                // If currentUserData is already populated (from registration), skip fetching to prevent race conditions
+                if (currentUserData && currentUserData.email === user.email) return;
+
+                try {
+                    const docRef = doc(db, "users", user.uid);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        currentUserData = docSnap.data();
+                        document.getElementById('dash-name').innerText = `Welcome, ${currentUserData.name.split(' ')[0]}`;
+                        document.getElementById('dash-code').innerText = currentUserData.referralCode;
+                        document.getElementById('dash-ref-count').innerText = currentUserData.totalreferral || 0;
+                        showView('dashboard');
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
                 }
             } else {
+                currentUserData = null;
                 showView('auth');
             }
         });
@@ -271,7 +278,9 @@
             showLoader("Signing In...");
             try {
                 await signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
-            } catch (error) { alert("Login Error: " + error.message); }
+            } catch (error) { 
+                alert("Login Error: " + error.message); 
+            }
             hideLoader();
         });
 
@@ -285,26 +294,46 @@
                 const refCode = document.getElementById('reg-ref').value.toUpperCase();
                 
                 const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCred.user, { displayName: name });
+                
                 const myCode = Math.random().toString(36).substring(2, 7).toUpperCase();
 
-                // Handle referral
-                if (refCode && refCode.length === 5) {
-                    // In a production app, query the db to find the user with this ref code.
-                    // For brevity and security rules simplification, assuming we log it in the document.
-                }
+                // Manually populate local state so the dashboard loads instantly
+                currentUserData = {
+                    name, 
+                    email, 
+                    referralCode: myCode, 
+                    referredBy: refCode || null, 
+                    totalreferral: 0
+                };
 
+                // Update UI instantly
+                document.getElementById('dash-name').innerText = `Welcome, ${name.split(' ')[0]}`;
+                document.getElementById('dash-code').innerText = myCode;
+                document.getElementById('dash-ref-count').innerText = 0;
+                
+                showView('dashboard');
+                hideLoader();
+
+                // Proceed with background write - will not block the user anymore
                 await setDoc(doc(db, "users", userCred.user.uid), {
-                    name, email, referralCode: myCode, referredBy: refCode || null, totalreferral: 0, created: serverTimestamp()
+                    name, 
+                    email, 
+                    referralCode: myCode, 
+                    referredBy: refCode || null, 
+                    totalreferral: 0, 
+                    created: serverTimestamp()
                 });
                 
-            } catch (error) { alert("Registration Error: " + error.message); }
-            hideLoader();
+            } catch (error) { 
+                hideLoader();
+                alert("Registration Error: " + error.message); 
+            }
         });
 
         window.logout = () => signOut(auth);
 
         // --- QUESTION PARSER LOGIC ---
-        // I have included a large chunk of the PDF text here[span_2](start_span)[span_2](end_span). The parser automatically formats it.
         const rawPDFText = `
 SECTION: SECTION A
 INSTRUCTION: Answer All
@@ -380,7 +409,6 @@ C.
 To serve as a means to an end, helping entrepreneurs achieve their goals more quickly
 D. To serve as a standalone goal for entrepreneurs to pursue
         `; 
-        // Note: Paste the full 206 questions text directly into the rawPDFText string above if needed.
 
         let ALL_QUESTIONS = [];
         
@@ -396,22 +424,19 @@ D. To serve as a standalone goal for entrepreneurs to pursue
                 let options = [];
                 let correctAnswer = null;
                 
-                let currentOptIndex = -1;
                 for(let i=1; i<lines.length; i++) {
                     const line = lines[i];
                     if (line.match(/^[A-D]\.$/)) {
-                        // This indicates a blank line followed the option letter (which means it's the correct answer based on PDF pattern)
                         correctAnswer = line.charAt(0);
                         const nextLine = lines[i+1];
                         options.push({ letter: correctAnswer, text: nextLine });
-                        i++; // skip next line as it belongs to this option
+                        i++; 
                     } else if (line.match(/^[A-D]\./)) {
                         const letter = line.charAt(0);
                         options.push({ letter: letter, text: line.substring(2).trim() });
                     }
                 }
                 
-                // Fallback: if parsing missed something, ensure we have 4 options
                 if(options.length >= 4 && correctAnswer) {
                     parsed.push({
                         id: index + 1,
@@ -425,7 +450,6 @@ D. To serve as a standalone goal for entrepreneurs to pursue
         }
 
         ALL_QUESTIONS = parseQuestions(rawPDFText);
-        // Fallback dummy questions if parser output is low to ensure the portal works beautifully
         while(ALL_QUESTIONS.length < 40) {
             ALL_QUESTIONS.push({
                 id: ALL_QUESTIONS.length + 1,
@@ -444,7 +468,6 @@ D. To serve as a standalone goal for entrepreneurs to pursue
         let timeLeft = 1800; // 30 mins
 
         window.startExam = () => {
-            // Shuffle and pick 40
             currentExamQs = [...ALL_QUESTIONS].sort(() => 0.5 - Math.random()).slice(0, 40);
             userAnswers = {};
             currentPage = 1;
@@ -516,7 +539,6 @@ D. To serve as a standalone goal for entrepreneurs to pursue
                 container.appendChild(qEl);
             }
 
-            // Pagination Controls Update
             document.getElementById('page-indicator').innerText = `Page ${currentPage} of ${Math.ceil(40 / perPage)}`;
             document.getElementById('btn-prev').disabled = currentPage === 1;
             
