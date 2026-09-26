@@ -238,7 +238,6 @@ input:focus{border-color:rgba(109,93,252,.75);box-shadow:0 0 0 4px rgba(109,93,2
         <div class="form-group"><label>Full name</label><input id="regName" type="text" autocomplete="name" required placeholder="Your full name"></div>
         <div class="form-group"><label>Email</label><input id="regEmail" type="email" autocomplete="email" required placeholder="you@example.com"></div>
         <div class="form-group"><label>Password</label><input id="regPassword" type="password" minlength="6" autocomplete="new-password" required placeholder="At least 6 characters"></div>
-        <div class="form-group"><label>Referral code <span style="color:#77829a">(optional)</span></label><input id="refCode" type="text" maxlength="5" style="text-transform:uppercase" placeholder="ABCDE"></div>
         <div id="registerMsg" class="form-message"></div>
         <button class="btn btn-primary" style="width:100%" type="submit">Create student account</button>
       </form>
@@ -258,8 +257,8 @@ input:focus{border-color:rgba(109,93,252,.75);box-shadow:0 0 0 4px rgba(109,93,2
     </div>
 
     <div class="stats">
-      <div class="stat glass"><div class="stat-label">Total referrals</div><div class="stat-value" id="refCount">0</div></div>
-      <div class="stat glass"><div class="stat-label">Your referral code</div><div class="stat-value code" id="myCode">-----</div></div>
+      <div class="stat glass"><div class="stat-label">Questions answered</div><div class="stat-value" id="totalAnswered">0</div></div>
+      <div class="stat glass"><div class="stat-label">Exams completed</div><div class="stat-value" id="examCount">0</div></div>
       <div class="stat glass"><div class="stat-label">Question bank</div><div class="stat-value">206</div></div>
     </div>
 
@@ -337,8 +336,7 @@ import {
   onAuthStateChanged, signOut, updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs,
-  serverTimestamp
+  getFirestore, doc, setDoc, getDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {"apiKey": "AIzaSyClLRBPEGGM0G8KXKoRvzxQgq1ybQ6lGRY", "authDomain": "gens202-eda67.firebaseapp.com", "databaseURL": "https://gens202-eda67-default-rtdb.firebaseio.com", "projectId": "gens202-eda67", "storageBucket": "gens202-eda67.firebasestorage.app", "messagingSenderId": "201068898058", "appId": "1:201068898058:web:1ef7d6d09bf74555bc3cf3", "measurementId": "G-XMW0HC9MZP"};
@@ -392,22 +390,6 @@ function friendlyError(error){
   return map[code] || error?.message || "Something went wrong. Please try again.";
 }
 
-function randomCode(){
-  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let out="";
-  for(let i=0;i<5;i++) out += chars[Math.floor(Math.random()*chars.length)];
-  return out;
-}
-
-async function uniqueReferralCode(){
-  for(let i=0;i<10;i++){
-    const code=randomCode();
-    const snap=await getDocs(query(collection(db,"users"),where("referralCode","==",code)));
-    if(snap.empty) return code;
-  }
-  throw new Error("Could not generate a unique referral code.");
-}
-
 $("loginTab").onclick=()=>{
   $("loginTab").classList.add("active"); $("registerTab").classList.remove("active");
   $("loginForm").classList.remove("hidden"); $("registerForm").classList.add("hidden");
@@ -426,86 +408,28 @@ $("loginForm").addEventListener("submit", async e=>{
   finally{btn.disabled=false;btn.textContent="Login to portal";}
 });
 
-let registrationInProgress = false;
-
 $("registerForm").addEventListener("submit", async e=>{
   e.preventDefault();
   setMessage("registerMsg","");
   const btn=e.submitter;
   btn.disabled=true;
   btn.textContent="Creating account…";
-  registrationInProgress=true;
-
   try{
     const name=$("regName").value.trim();
     const email=$("regEmail").value.trim();
     const password=$("regPassword").value;
-    const enteredRef=$("refCode").value.trim().toUpperCase();
 
-    // 1. Create the Firebase Authentication account first.
     const cred=await createUserWithEmailAndPassword(auth,email,password);
     await updateProfile(cred.user,{displayName:name});
 
-    // 2. Generate this student's own referral code.
-    //    If code generation fails, the account itself should still be usable.
-    let referralCode = randomCode();
-    try{
-      referralCode = await uniqueReferralCode();
-    }catch(codeErr){
-      console.warn("Referral code generation fallback:",codeErr);
-    }
-
-    // 3. IMPORTANT: create the student's own users document before doing
-    //    anything with the optional referral. This prevents the dashboard
-    //    from depending on another user's document being writable.
     await setDoc(doc(db,"users",cred.user.uid),{
       name,
       email,
-      referralCode,
-      referredBy:"",
-      totalreferral:0,
+      questionsAnswered:0,
+      examsCompleted:0,
       created:serverTimestamp()
     });
-
-    // 4. The account is now complete. Let the auth listener/dashboard open.
-    registrationInProgress=false;
-    renderDashboard();
-    showView("dashboardView");
-    btn.disabled=false;
-    btn.textContent="Create student account";
-    setMessage("registerMsg","");
-
-    // 5. Referral handling is OPTIONAL and NEVER allowed to block account
-    //    creation/dashboard access. A valid code creates a separate referral
-    //    document instead of editing the referrer's users document.
-    if(enteredRef && enteredRef !== referralCode){
-      try{
-        const q=query(
-          collection(db,"users"),
-          where("referralCode","==",enteredRef)
-        );
-        const snap=await getDocs(q);
-
-        if(!snap.empty && snap.docs[0].id !== cred.user.uid){
-          const referrerId=snap.docs[0].id;
-          await setDoc(doc(collection(db,"referrals")),{
-            referrerId:referrerId,
-            referrerCode:enteredRef,
-            referredId:cred.user.uid,
-            referredEmail:email,
-            created:serverTimestamp()
-          });
-
-          // Keep the local dashboard data consistent. Referral count itself
-          // is always calculated from the referrals collection.
-          await loadReferralCount();
-        }
-      }catch(refErr){
-        console.warn("Referral processing skipped:",refErr);
-      }
-    }
   }catch(err){
-    registrationInProgress=false;
     setMessage("registerMsg",friendlyError(err));
   }finally{
     btn.disabled=false;
@@ -526,63 +450,45 @@ onAuthStateChanged(auth, async user=>{
 
   currentUser=user;
 
-  // During registration, the registration handler controls when the
-  // dashboard opens. This avoids a race between Auth and Firestore.
-  if(registrationInProgress) return;
-
   try{
-    let snap=null;
-    for(let attempt=0;attempt<3;attempt++){
-      snap=await getDoc(doc(db,"users",user.uid));
-      if(snap.exists()) break;
-      await new Promise(resolve=>setTimeout(resolve,300));
+    const userRef=doc(db,"users",user.uid);
+    const snap=await getDoc(userRef);
+
+    if(snap.exists()){
+      userData=snap.data();
+    }else{
+      userData={
+        name:user.displayName||"Student",
+        email:user.email||"",
+        questionsAnswered:0,
+        examsCompleted:0
+      };
+      await setDoc(userRef,userData,{merge:true});
     }
 
-    userData=snap?.exists()
-      ? snap.data()
-      : {
-          name:user.displayName||"Student",
-          email:user.email,
-          referralCode:"-----",
-          totalreferral:0
-        };
-
-    await renderDashboard();
+    renderDashboard();
     showView("dashboardView");
   }catch(err){
     console.error("Dashboard load error:",err);
-    toast("Could not load your dashboard. Please refresh and try again.");
+    // Authentication is already successful. Keep the student inside the portal
+    // even if an old/missing Firestore document needs to be repaired.
+    userData={
+      name:user.displayName||"Student",
+      email:user.email||"",
+      questionsAnswered:0,
+      examsCompleted:0
+    };
+    renderDashboard();
+    showView("dashboardView");
+    toast("Logged in. Your profile is being set up.");
   }
 });
 
-async function loadReferralCount(){
-  const code=userData?.referralCode;
-  if(!code || code === "-----"){
-    $("refCount").textContent="0";
-    return 0;
-  }
-
-  try{
-    const q=query(
-      collection(db,"referrals"),
-      where("referrerCode","==",code.toUpperCase())
-    );
-    const snap=await getDocs(q);
-    $("refCount").textContent=String(snap.size);
-    return snap.size;
-  }catch(err){
-    console.error("Referral count error:",err);
-    $("refCount").textContent="0";
-    return 0;
-  }
-}
-
-async function renderDashboard(){
+function renderDashboard(){
   $("welcomeName").textContent=`Welcome, ${userData?.name || currentUser?.displayName || "Student"} 👋`;
   $("navUser").textContent=userData?.name || currentUser?.email || "";
-  $("myCode").textContent=userData?.referralCode || "-----";
-  $("refCount").textContent="…";
-  await loadReferralCount();
+  $("totalAnswered").textContent=Number(userData?.questionsAnswered || 0);
+  $("examCount").textContent=Number(userData?.examsCompleted || 0);
 }
 
 function shuffle(arr){
@@ -595,6 +501,7 @@ function shuffle(arr){
 }
 
 function startExam(){
+  window.__currentExamSaved=false;
   stopTimer();
   examQuestions=shuffle(QUESTIONS).slice(0,EXAM_SIZE);
   answers=new Array(EXAM_SIZE).fill(null);
@@ -658,7 +565,17 @@ function renderExam(){
 
   document.querySelectorAll(".option").forEach(btn=>{
     btn.onclick=()=>{
-      answers[Number(btn.dataset.index)]=btn.dataset.answer;
+      const index=Number(btn.dataset.index);
+      const wasUnanswered=!answers[index];
+      answers[index]=btn.dataset.answer;
+
+      if(wasUnanswered && currentUser){
+        const total=Number(userData?.questionsAnswered || 0)+1;
+        userData={...userData,questionsAnswered:total};
+        $("totalAnswered").textContent=total;
+        setDoc(doc(db,"users",currentUser.uid),{questionsAnswered:total},{merge:true}).catch(err=>console.error("Could not save answered count:",err));
+      }
+
       renderExam();
     };
   });
@@ -689,9 +606,18 @@ $("prevPage").onclick=()=>{if(currentPage>0){currentPage--;renderExam();window.s
 $("nextPage").onclick=()=>{if(currentPage<Math.ceil(EXAM_SIZE/PAGE_SIZE)-1){currentPage++;renderExam();window.scrollTo({top:0,behavior:"smooth"});}};
 
 function submitExam(){
+  if(!examQuestions.length)return;
   stopTimer();
   let score=0;
   examQuestions.forEach((q,i)=>{if(answers[i]===q.answer)score++;});
+
+  if(currentUser && !window.__currentExamSaved){
+    window.__currentExamSaved=true;
+    const completed=Number(userData?.examsCompleted || 0)+1;
+    userData={...userData,examsCompleted:completed};
+    setDoc(doc(db,"users",currentUser.uid),{examsCompleted:completed},{merge:true}).catch(err=>console.error("Could not save exam count:",err));
+  }
+
   renderReview(score);
   showView("reviewView");
 }
