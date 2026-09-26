@@ -1,499 +1,734 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GENS202 CBT | Jamb Mock Examination</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
-        
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: #f3f4f6; /* Light gray background like standard CBT */
-            color: #1f2937;
-            user-select: none; /* Prevent text selection to mimic real exam */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="description" content="GENS202 CBT 2026 practice portal">
+<title>GENS202 CBT 2026</title>
 
-        /* Standard JAMB Green */
-        .bg-jamb-green { background-color: #008751; }
-        .text-jamb-green { color: #008751; }
-        .border-jamb-green { border-color: #008751; }
-
-        .view-section { display: none; }
-        .view-section.active { display: flex; flex-direction: column; }
-
-        /* Palette Buttons */
-        .palette-btn {
-            width: 100%; aspect-ratio: 1;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 4px; font-weight: 600; font-size: 0.9rem;
-            cursor: pointer; transition: all 0.1s;
-        }
-        .palette-unanswered { background: #e5e7eb; color: #374151; border: 1px solid #d1d5db; }
-        .palette-answered { background: #008751; color: white; border: 1px solid #00683f; }
-        .palette-active { border: 3px solid #ef4444; transform: scale(1.05); } /* Red border for current question */
-
-        /* Radio Button Styling */
-        input[type="radio"] {
-            width: 20px; height: 20px;
-            accent-color: #008751;
-            cursor: pointer;
-        }
-
-        /* Loader */
-        .loader-overlay {
-            position: fixed; inset: 0; background: rgba(255, 255, 255, 0.9);
-            z-index: 100; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center;
-        }
-    </style>
+<style>
+:root{
+  --bg:#070b16; --panel:rgba(17,24,45,.78); --panel2:rgba(25,34,62,.86);
+  --text:#f7f9ff; --muted:#9ca8c4; --line:rgba(255,255,255,.10);
+  --primary:#6d5dfc; --primary2:#23c7ff; --success:#22c55e;
+  --danger:#ef4444; --warning:#f59e0b; --shadow:0 24px 70px rgba(0,0,0,.35);
+  --radius:24px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; min-height:100vh; color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%,rgba(109,93,252,.24),transparent 30%),
+    radial-gradient(circle at 90% 20%,rgba(35,199,255,.16),transparent 28%),
+    linear-gradient(135deg,#060914,#0b1020 52%,#10162a);
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.container{width:min(1180px,calc(100% - 28px));margin:auto}
+.glass{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.topbar{
+  position:sticky;top:0;z-index:50;border-bottom:1px solid var(--line);
+  background:rgba(6,9,20,.72);backdrop-filter:blur(18px);
+}
+.nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:900;letter-spacing:-.4px}
+.brand-mark{
+  width:42px;height:42px;border-radius:14px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  box-shadow:0 10px 30px rgba(109,93,252,.32);font-size:20px
+}
+.nav-actions{display:flex;align-items:center;gap:10px}
+.btn{
+  border:0;border-radius:14px;padding:12px 17px;color:#fff;font-weight:800;
+  transition:.2s transform,.2s box-shadow,.2s opacity,.2s background;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-primary{background:linear-gradient(135deg,var(--primary),#8a7cff);box-shadow:0 10px 25px rgba(109,93,252,.25)}
+.btn-secondary{background:rgba(255,255,255,.08);border:1px solid var(--line)}
+.btn-danger{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.3);color:#fecaca}
+.btn-success{background:linear-gradient(135deg,#16a34a,#22c55e)}
+main{padding:30px 0 70px}
+.hero{
+  min-height:calc(100vh - 72px);display:grid;place-items:center;padding:35px 0;
+}
+.auth-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:stretch}
+.auth-copy{
+  padding:48px;border-radius:var(--radius);position:relative;overflow:hidden;
+  background:linear-gradient(145deg,rgba(109,93,252,.18),rgba(35,199,255,.06));
+  border:1px solid var(--line);
+}
+.auth-copy:after{
+  content:"";position:absolute;width:260px;height:260px;border-radius:50%;
+  background:rgba(35,199,255,.13);right:-90px;bottom:-110px;filter:blur(5px)
+}
+.eyebrow{color:#a9a1ff;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px}
+h1{font-size:clamp(38px,6vw,68px);line-height:.98;margin:15px 0 20px;letter-spacing:-3px}
+h2{margin:0 0 8px;letter-spacing:-1px}
+p{color:var(--muted);line-height:1.65}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:30px}
+.feature{padding:15px;border-radius:17px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.feature strong{display:block;margin-bottom:4px}
+.auth-card{padding:28px;border-radius:var(--radius)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;padding:5px;border-radius:15px;background:rgba(255,255,255,.05);margin:20px 0}
+.tab{border:0;background:transparent;color:var(--muted);padding:12px;border-radius:11px;font-weight:800}
+.tab.active{background:rgba(255,255,255,.10);color:#fff}
+.form-group{margin:14px 0}
+label{display:block;font-size:13px;color:#bac4db;font-weight:700;margin-bottom:8px}
+input{
+  width:100%;padding:14px 15px;border-radius:14px;border:1px solid var(--line);
+  background:rgba(3,7,18,.55);color:#fff;outline:none;transition:.2s border,.2s box-shadow
+}
+input:focus{border-color:rgba(109,93,252,.75);box-shadow:0 0 0 4px rgba(109,93,252,.12)}
+.form-message{min-height:22px;font-size:13px;color:#fca5a5;margin:8px 0}
+.dashboard-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:24px}
+.kicker{color:var(--muted);font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.stat{padding:21px;border-radius:20px}
+.stat-label{color:var(--muted);font-size:13px;font-weight:700}
+.stat-value{font-size:27px;font-weight:950;margin-top:7px;word-break:break-all}
+.code{color:#ffd65a}
+.exam-launch{margin-top:18px;padding:28px;border-radius:24px;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.exam-meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:14px}
+.exam-layout{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:18px;align-items:start}
+.exam-main{min-width:0}
+.exam-top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:16px}
+.timer{
+  display:flex;align-items:center;gap:9px;padding:11px 15px;border-radius:14px;
+  background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);font-weight:950;color:#ffd37a
+}
+.timer.danger{color:#fecaca;background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.25)}
+.progress-wrap{height:7px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.progress{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--primary2));transition:.3s}
+.question-card{padding:25px;border-radius:24px;margin-bottom:14px}
+.question-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.q-number{color:#a9a1ff;font-weight:950;font-size:13px}
+.question-text{font-size:18px;line-height:1.55;font-weight:800;margin:12px 0 20px}
+.options{display:grid;gap:10px}
+.option{
+  display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+  padding:15px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.035);
+  color:#e9edf8;transition:.18s;border-left:4px solid transparent
+}
+.option:hover{background:rgba(255,255,255,.07);border-color:rgba(109,93,252,.45)}
+.option.selected{background:rgba(109,93,252,.14);border-color:rgba(109,93,252,.55);border-left-color:var(--primary)}
+.option-letter{
+  width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;
+  background:rgba(255,255,255,.08);font-weight:950;color:#cbd5e1
+}
+.option.selected .option-letter{background:var(--primary);color:#fff}
+.pagination{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:4px 0}
+.page-buttons{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
+.page-btn{min-width:40px;height:40px;padding:0 10px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:#dbe3f5;font-weight:850}
+.page-btn.active{background:var(--primary);border-color:var(--primary)}
+.palette{padding:19px;border-radius:22px;position:sticky;top:92px}
+.palette-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.palette-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.pal{
+  height:38px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);
+  color:#b9c2d7;font-weight:850
+}
+.pal.current{outline:2px solid rgba(109,93,252,.8);outline-offset:1px}
+.pal.answered{background:rgba(34,197,94,.18);border-color:rgba(34,197,94,.4);color:#86efac}
+.pal.unanswered{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.28);color:#fca5a5}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;color:var(--muted);font-size:12px}
+.legend span{display:flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:3px;background:#555}
+.dot.g{background:var(--success)}.dot.r{background:var(--danger)}
+.review-head{text-align:center;padding:35px 15px}
+.score-ring{
+  width:145px;height:145px;border-radius:50%;margin:20px auto;
+  display:grid;place-items:center;background:conic-gradient(var(--primary) 0deg,#222b43 0deg);
+  position:relative
+}
+.score-ring:after{content:"";position:absolute;inset:11px;background:#0d1427;border-radius:50%}
+.score-value{position:relative;z-index:1;font-size:29px;font-weight:950}
+.review-grid{display:grid;gap:12px}
+.review-item{padding:18px;border-radius:19px}
+.review-q{font-weight:850;line-height:1.5;margin-bottom:12px}
+.review-option{padding:10px 12px;border-radius:10px;margin-top:6px;background:rgba(255,255,255,.035);font-size:14px}
+.review-option.correct{background:rgba(34,197,94,.14);color:#a7f3d0}
+.review-option.wrong{background:rgba(239,68,68,.14);color:#fecaca}
+.review-note{margin-top:10px;font-size:12px;color:var(--muted)}
+.toast{
+  position:fixed;right:18px;bottom:18px;z-index:100;max-width:360px;
+  padding:14px 17px;border-radius:15px;background:#121a30;border:1px solid var(--line);
+  box-shadow:var(--shadow);transform:translateY(20px);opacity:0;pointer-events:none;transition:.25s
+}
+.toast.show{transform:translateY(0);opacity:1}
+.empty{text-align:center;padding:40px;color:var(--muted)}
+.footer{text-align:center;color:#66718b;font-size:12px;margin-top:30px}
+@media(max-width:900px){
+  .auth-grid,.exam-layout{grid-template-columns:1fr}
+  .palette{position:static;order:-1}
+  .palette-grid{grid-template-columns:repeat(10,1fr)}
+  .stats{grid-template-columns:1fr 1fr}
+  .auth-copy{padding:32px}
+}
+@media(max-width:620px){
+  .container{width:min(100% - 18px,1180px)}
+  .nav{height:64px}
+  .nav-actions .btn{padding:9px 12px}
+  .brand-mark{width:38px;height:38px}
+  main{padding-top:20px}
+  .hero{min-height:auto;padding:20px 0 45px}
+  .auth-copy{display:none}
+  .auth-card{padding:20px}
+  .stats{grid-template-columns:1fr}
+  .dashboard-head{align-items:flex-start;flex-direction:column}
+  .exam-launch{align-items:flex-start;flex-direction:column}
+  .exam-top{align-items:flex-start;flex-direction:column}
+  .question-card{padding:18px}
+  .question-text{font-size:16px}
+  .pagination{flex-wrap:wrap}
+  .pagination .page-buttons{order:3;width:100%}
+  .palette-grid{grid-template-columns:repeat(8,1fr)}
+  .pal{height:35px}
+  h1{font-size:43px;letter-spacing:-2px}
+}
+</style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
 
-    <!-- LOADER -->
-    <div id="loader" class="loader-overlay hidden">
-        <i class="fas fa-spinner fa-spin text-5xl text-jamb-green mb-4"></i>
-        <p class="text-lg font-semibold text-gray-700" id="loader-text">Loading...</p>
+<body>
+<header id="topbar" class="topbar hidden">
+  <div class="container nav">
+    <div class="brand"><div class="brand-mark">G</div><span>GENS202 CBT <span style="color:#8f86ff">2026</span></span></div>
+    <div class="nav-actions">
+      <span id="navUser" class="kicker"></span>
+      <button id="logoutBtn" class="btn btn-danger">Logout</button>
+    </div>
+  </div>
+</header>
+
+<section id="authView" class="hero">
+  <div class="container auth-grid">
+    <div class="auth-copy">
+      <div class="eyebrow">GENS202 • CBT 2026</div>
+      <h1>Practice smarter.<br><span style="color:#9a91ff">Enter prepared.</span></h1>
+      <p>Modern CBT practice with randomized questions, a real exam timer, question palette, pagination and instant review.</p>
+      <div class="features">
+        <div class="feature"><strong>206</strong><span class="kicker">Question bank</span></div>
+        <div class="feature"><strong>40</strong><span class="kicker">Per exam</span></div>
+        <div class="feature"><strong>30 min</strong><span class="kicker">Exam timer</span></div>
+      </div>
     </div>
 
-    <!-- 1. AUTHENTICATION VIEW (PERFECTLY CENTERED) -->
-    <div id="auth-view" class="view-section active min-h-screen items-center justify-center bg-gray-200 p-4">
-        <div class="bg-white shadow-2xl rounded-lg w-full max-w-md overflow-hidden border border-gray-300">
-            <div class="bg-jamb-green text-white text-center py-6 px-4">
-                <i class="fas fa-graduation-cap text-4xl mb-2"></i>
-                <h1 class="text-2xl font-bold uppercase tracking-wider">GENS202 CBT</h1>
-                <p class="text-sm opacity-90">Computer Based Test Portal</p>
-            </div>
+    <div class="auth-card glass">
+      <div class="eyebrow">Student portal</div>
+      <h2 style="margin-top:8px">Welcome back 👋</h2>
+      <p style="margin-top:0">Login to continue, or create your student account.</p>
 
-            <div class="p-6">
-                <div class="flex border-b border-gray-200 mb-6">
-                    <button onclick="switchAuthTab('login')" id="tab-login" class="w-1/2 py-2 text-center font-semibold text-jamb-green border-b-2 border-jamb-green transition-colors">Login</button>
-                    <button onclick="switchAuthTab('register')" id="tab-register" class="w-1/2 py-2 text-center font-semibold text-gray-500 border-b-2 border-transparent transition-colors">Register</button>
-                </div>
+      <div class="tabs">
+        <button class="tab active" id="loginTab">Login</button>
+        <button class="tab" id="registerTab">Register</button>
+      </div>
 
-                <form id="login-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
-                        <input type="email" id="login-email" required class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-jamb-green focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
-                        <input type="password" id="login-password" required class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-jamb-green focus:outline-none">
-                    </div>
-                    <button type="submit" class="w-full bg-jamb-green text-white font-bold py-3 rounded hover:bg-green-700 transition">LOGIN TO CBT</button>
-                </form>
+      <form id="loginForm">
+        <div class="form-group"><label>Email</label><input id="loginEmail" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+        <div class="form-group"><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••"></div>
+        <div id="loginMsg" class="form-message"></div>
+        <button class="btn btn-primary" style="width:100%" type="submit">Login to portal</button>
+      </form>
 
-                <form id="register-form" class="space-y-4 hidden">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
-                        <input type="text" id="reg-name" required class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-jamb-green focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
-                        <input type="email" id="reg-email" required class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-jamb-green focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
-                        <input type="password" id="reg-password" required minlength="6" class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-jamb-green focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Registration/Referral Code</label>
-                        <input type="text" id="reg-ref" maxlength="5" placeholder="Optional" class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-jamb-green focus:outline-none uppercase">
-                    </div>
-                    <button type="submit" class="w-full bg-jamb-green text-white font-bold py-3 rounded hover:bg-green-700 transition">CREATE ACCOUNT</button>
-                </form>
-            </div>
+      <form id="registerForm" class="hidden">
+        <div class="form-group"><label>Full name</label><input id="regName" type="text" autocomplete="name" required placeholder="Your full name"></div>
+        <div class="form-group"><label>Email</label><input id="regEmail" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+        <div class="form-group"><label>Password</label><input id="regPassword" type="password" minlength="6" autocomplete="new-password" required placeholder="At least 6 characters"></div>
+        <div class="form-group"><label>Referral code <span style="color:#77829a">(optional)</span></label><input id="refCode" type="text" maxlength="5" style="text-transform:uppercase" placeholder="ABCDE"></div>
+        <div id="registerMsg" class="form-message"></div>
+        <button class="btn btn-primary" style="width:100%" type="submit">Create student account</button>
+      </form>
+      <div class="footer">Use a valid email and keep your password private.</div>
+    </div>
+  </div>
+</section>
+
+<main id="dashboardView" class="hidden">
+  <div class="container">
+    <div class="dashboard-head">
+      <div>
+        <div class="eyebrow">Student dashboard</div>
+        <h2 id="welcomeName" style="font-size:32px;margin-top:7px">Welcome</h2>
+        <div class="kicker">Your practice center is ready.</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat glass"><div class="stat-label">Total referrals</div><div class="stat-value" id="refCount">0</div></div>
+      <div class="stat glass"><div class="stat-label">Your referral code</div><div class="stat-value code" id="myCode">-----</div></div>
+      <div class="stat glass"><div class="stat-label">Question bank</div><div class="stat-value">206</div></div>
+    </div>
+
+    <div class="exam-launch glass">
+      <div>
+        <div class="eyebrow">Ready?</div>
+        <h2 style="margin-top:6px">Start a 40-question CBT</h2>
+        <div class="exam-meta">
+          <span>⏱ 30 minutes</span><span>🎯 40 random questions</span><span>📚 From 206 questions</span>
         </div>
+      </div>
+      <button id="startExamBtn" class="btn btn-primary">Start Exam →</button>
     </div>
+  </div>
+</main>
 
-    <!-- 2. DASHBOARD VIEW (INSTRUCTIONS PAGE) -->
-    <div id="dashboard-view" class="view-section min-h-screen">
-        <header class="bg-jamb-green text-white py-4 px-6 flex justify-between items-center shadow-md">
-            <div class="text-xl font-bold uppercase tracking-widest"><i class="fas fa-desktop mr-2"></i> CBT Dashboard</div>
-            <button onclick="logout()" class="bg-white text-jamb-green px-4 py-1.5 rounded font-semibold text-sm hover:bg-gray-100">Log Out</button>
-        </header>
-
-        <main class="flex-grow flex items-center justify-center p-4">
-            <div class="bg-white p-8 rounded-lg shadow-lg border border-gray-200 max-w-3xl w-full">
-                <div class="flex items-center gap-6 mb-8 pb-6 border-b">
-                    <div class="w-24 h-24 bg-gray-200 rounded-md flex items-center justify-center text-gray-400">
-                        <i class="fas fa-user text-5xl"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800" id="dash-name">Candidate Name</h2>
-                        <p class="text-gray-600 mt-1 font-mono font-semibold">Reg No: <span id="dash-code" class="text-jamb-green">-----</span></p>
-                    </div>
-                </div>
-
-                <h3 class="text-xl font-bold text-gray-800 mb-4 uppercase">Examination Instructions</h3>
-                <ul class="list-disc pl-5 space-y-2 text-gray-600 mb-8">
-                    <li>This examination consists of <strong>40 randomly selected questions</strong> on GENS202.</li>
-                    <li>You have exactly <strong>30 minutes</strong> to complete the test.</li>
-                    <li>Read each question carefully. Select your answer by clicking the radio button corresponding to the option.</li>
-                    <li>Use the <strong>"Next"</strong> and <strong>"Previous"</strong> buttons to navigate.</li>
-                    <li>The examination will automatically submit when the timer runs out.</li>
-                </ul>
-
-                <div class="flex justify-center">
-                    <button onclick="startExam()" class="bg-jamb-green text-white font-bold px-12 py-3 rounded shadow-md hover:bg-green-700 transition text-lg uppercase tracking-wide">
-                        Start Examination
-                    </button>
-                </div>
-            </div>
-        </main>
+<main id="examView" class="hidden">
+  <div class="container">
+    <div class="exam-top">
+      <div>
+        <div class="eyebrow">CBT examination</div>
+        <h2>GENS202 Practice Exam</h2>
+      </div>
+      <div id="timer" class="timer">⏱ <span>30:00</span></div>
     </div>
+    <div class="progress-wrap"><div id="progressBar" class="progress"></div></div>
 
-    <!-- 3. EXAM VIEW (AUTHENTIC CBT INTERFACE) -->
-    <div id="exam-view" class="view-section h-screen bg-gray-100 flex flex-col overflow-hidden">
-        <!-- CBT Header -->
-        <header class="bg-jamb-green text-white px-6 py-3 shadow-md flex justify-between items-center z-10 shrink-0">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-white rounded flex items-center justify-center text-jamb-green border-2 border-white overflow-hidden">
-                    <i class="fas fa-user text-2xl"></i>
-                </div>
-                <div>
-                    <div class="font-bold uppercase text-lg leading-tight" id="exam-cand-name">Candidate Name</div>
-                    <div class="text-sm font-mono opacity-90" id="exam-cand-reg">Reg No: -----</div>
-                </div>
-            </div>
-            
-            <div class="text-center">
-                <div class="text-xs uppercase font-semibold tracking-wider opacity-90">Subject</div>
-                <div class="font-bold text-xl">GENS202 : Entrepreneurship</div>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <div class="text-right">
-                    <div class="text-xs uppercase font-semibold tracking-wider opacity-90">Time Remaining</div>
-                    <div id="timer-display" class="font-mono text-2xl font-bold font-variant-numeric: tabular-nums">30:00</div>
-                </div>
-                <i class="fas fa-clock text-3xl opacity-80"></i>
-            </div>
-        </header>
-
-        <!-- Main Workspace -->
-        <div class="flex-grow flex overflow-hidden">
-            <!-- Left: Question Area -->
-            <div class="flex-grow bg-white m-4 rounded shadow border border-gray-300 flex flex-col relative">
-                <!-- Question Number Header -->
-                <div class="bg-gray-200 border-b border-gray-300 px-6 py-3 flex justify-between items-center">
-                    <h2 class="font-bold text-gray-800 text-lg" id="question-header">Question 1 of 40</h2>
-                    <button class="text-gray-500 hover:text-gray-700" title="Report Issue"><i class="fas fa-flag"></i></button>
-                </div>
-
-                <!-- Actual Question Content -->
-                <div class="p-8 overflow-y-auto flex-grow" id="question-content">
-                    <p class="text-xl font-semibold text-gray-900 mb-6 leading-relaxed" id="q-text">Question text goes here...</p>
-                    
-                    <div class="space-y-4 ml-2" id="options-container">
-                        <!-- Options injected via JS -->
-                    </div>
-                </div>
-
-                <!-- Navigation Footer -->
-                <div class="bg-gray-100 border-t border-gray-300 p-4 flex justify-between items-center shrink-0">
-                    <button onclick="prevQuestion()" id="btn-prev" class="bg-gray-500 text-white px-8 py-2 rounded font-bold shadow disabled:opacity-50 uppercase text-sm">
-                        <i class="fas fa-chevron-left mr-2"></i> Previous
-                    </button>
-                    <button onclick="nextQuestion()" id="btn-next" class="bg-jamb-green text-white px-8 py-2 rounded font-bold shadow hover:bg-green-700 uppercase text-sm">
-                        Next <i class="fas fa-chevron-right ml-2"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Right: Palette Area -->
-            <div class="w-80 bg-white m-4 ml-0 rounded shadow border border-gray-300 flex flex-col shrink-0">
-                <div class="bg-gray-200 border-b border-gray-300 px-4 py-3 text-center">
-                    <h3 class="font-bold text-gray-800">Question Palette</h3>
-                </div>
-                
-                <div class="p-4 flex-grow overflow-y-auto">
-                    <!-- Color Legend -->
-                    <div class="flex justify-center gap-4 mb-4 text-xs font-semibold text-gray-600">
-                        <span class="flex items-center gap-1"><div class="w-3 h-3 bg-[#e5e7eb] border border-gray-400"></div> Unanswered</span>
-                        <span class="flex items-center gap-1"><div class="w-3 h-3 bg-jamb-green"></div> Answered</span>
-                    </div>
-
-                    <!-- Number Grid -->
-                    <div class="grid grid-cols-5 gap-2" id="palette-container">
-                        <!-- Numbers injected via JS -->
-                    </div>
-                </div>
-
-                <div class="p-4 border-t border-gray-300">
-                    <button onclick="submitExam()" class="w-full bg-red-600 text-white font-bold py-3 rounded shadow-md hover:bg-red-700 uppercase tracking-wider">
-                        Submit Exam
-                    </button>
-                </div>
-            </div>
+    <div class="exam-layout">
+      <div class="exam-main">
+        <div id="questionList"></div>
+        <div class="pagination">
+          <button id="prevPage" class="btn btn-secondary">← Prev page</button>
+          <div id="pageButtons" class="page-buttons"></div>
+          <button id="nextPage" class="btn btn-primary">Next page →</button>
         </div>
-    </div>
-
-    <!-- 4. REVIEW VIEW -->
-    <div id="review-view" class="view-section min-h-screen bg-gray-200 p-8 flex items-center justify-center">
-        <div class="bg-white p-10 rounded-lg shadow-xl text-center max-w-xl w-full border-t-8 border-jamb-green">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">Examination Submitted</h2>
-            <p class="text-gray-600 mb-8 font-medium">Your CBT session has ended successfully.</p>
-            
-            <div class="bg-gray-50 border border-gray-200 rounded p-6 mb-8">
-                <div class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">Total Score</div>
-                <div class="text-6xl font-black text-jamb-green" id="result-score">0/40</div>
-                <div class="text-lg font-bold text-gray-700 mt-2" id="result-percentage">0%</div>
-            </div>
-
-            <button onclick="showView('dashboard')" class="bg-gray-800 text-white font-bold px-8 py-3 rounded shadow hover:bg-gray-900 transition uppercase">
-                Return to Dashboard
-            </button>
+        <div style="display:flex;justify-content:flex-end;margin-top:12px">
+          <button id="submitExamBtn" class="btn btn-success">Submit Exam</button>
         </div>
+      </div>
+
+      <aside class="palette glass">
+        <div class="palette-head"><strong>Question palette</strong><span id="answeredCount" class="kicker">0/40</span></div>
+        <div id="paletteGrid" class="palette-grid"></div>
+        <div class="legend">
+          <span><i class="dot g"></i> Answered</span>
+          <span><i class="dot r"></i> Unanswered</span>
+        </div>
+      </aside>
     </div>
+  </div>
+</main>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<main id="reviewView" class="hidden">
+  <div class="container">
+    <div class="review-head glass" style="border-radius:26px">
+      <div class="eyebrow">Exam complete</div>
+      <h2 id="reviewTitle" style="font-size:34px;margin-top:7px">Your Result</h2>
+      <div id="scoreRing" class="score-ring"><div id="scoreValue" class="score-value">0/40</div></div>
+      <p id="scoreSummary"></p>
+      <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap">
+        <button id="retryBtn" class="btn btn-primary">Take another exam</button>
+        <button id="dashboardBtn" class="btn btn-secondary">Dashboard</button>
+      </div>
+    </div>
+    <div id="reviewList" class="review-grid" style="margin-top:18px"></div>
+  </div>
+</main>
 
-        // FIREBASE SETUP
-        const firebaseConfig = {
-            apiKey: "AIzaSyClLRBPEGGM0G8KXKoRvzxQgq1ybQ6lGRY",
-            authDomain: "gens202-eda67.firebaseapp.com",
-            databaseURL: "https://gens202-eda67-default-rtdb.firebaseio.com",
-            projectId: "gens202-eda67",
-            storageBucket: "gens202-eda67.firebasestorage.app",
-            messagingSenderId: "201068898058",
-            appId: "1:201068898058:web:1ef7d6d09bf74555bc3cf3",
-            measurementId: "G-XMW0HC9MZP"
-        };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+<div id="toast" class="toast"></div>
 
-        // UI HELPERS
-        window.showView = (id) => {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.getElementById(`${id}-view`).classList.add('active');
-        };
-        const showLoader = (text) => { 
-            document.getElementById('loader').classList.remove('hidden'); 
-            document.getElementById('loader-text').innerText = text; 
-        };
-        const hideLoader = () => document.getElementById('loader').classList.add('hidden');
-        
-        window.switchAuthTab = (tab) => {
-            const isLogin = tab === 'login';
-            document.getElementById('login-form').style.display = isLogin ? 'block' : 'none';
-            document.getElementById('register-form').style.display = isLogin ? 'none' : 'block';
-            document.getElementById('tab-login').className = isLogin ? 'w-1/2 py-2 text-center font-semibold text-jamb-green border-b-2 border-jamb-green' : 'w-1/2 py-2 text-center font-semibold text-gray-500 border-b-2 border-transparent';
-            document.getElementById('tab-register').className = !isLogin ? 'w-1/2 py-2 text-center font-semibold text-jamb-green border-b-2 border-jamb-green' : 'w-1/2 py-2 text-center font-semibold text-gray-500 border-b-2 border-transparent';
-        };
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  onAuthStateChanged, signOut, updateProfile
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // AUTHENTICATION LOGIC (NON-BLOCKING FIX APPLIED)
-        let currentUserData = null;
+const firebaseConfig = {"apiKey": "AIzaSyClLRBPEGGM0G8KXKoRvzxQgq1ybQ6lGRY", "authDomain": "gens202-eda67.firebaseapp.com", "databaseURL": "https://gens202-eda67-default-rtdb.firebaseio.com", "projectId": "gens202-eda67", "storageBucket": "gens202-eda67.firebasestorage.app", "messagingSenderId": "201068898058", "appId": "1:201068898058:web:1ef7d6d09bf74555bc3cf3", "measurementId": "G-XMW0HC9MZP"};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                if (currentUserData && currentUserData.email === user.email) return; // Prevent race condition
-                showLoader("Loading Profile...");
-                try {
-                    const docSnap = await getDoc(doc(db, "users", user.uid));
-                    if (docSnap.exists()) {
-                        currentUserData = docSnap.data();
-                        updateDashboardUI();
-                        showView('dashboard');
-                    }
-                } catch (error) {
-                    console.error(error);
-                }
-                hideLoader();
-            } else {
-                currentUserData = null;
-                showView('auth');
-            }
-        });
+const QUESTIONS = [{"id":1,"q":"Which of the following is NOT a characteristic of organization?","options":["Management provides guidance and direction.","A set of rules and instruments are communicated to all involved.","Personnel positions, rights, and responsibilities are defined and classified.","Organization involves the allocation of resources without any planning."],"answer":"C"},{"id":2,"q":"From the following options, what represents the nature of organization?","options":["Subdivision of tasks based on seniority.","Allocation of resources without any consideration of suitability.","Determination of positions at random levels.","Selection of suitable personnel and allocation of jobs according to suitability."],"answer":"D"},{"id":3,"q":"What is one of the importance of an effective organization?","options":["Makes management complicated and inefficient.","Discourages specialization among employees.","Decreases productivity and hampers progress.","Encourages specialization, improves techniques, encourages constructive thinking, increases productivity, and accelerates progress."],"answer":"D"},{"id":4,"q":"Which of the following statements is true about organization?","options":["Organization is a process that has no connection with management.","Organization is a tool used by employees to accomplish personal goals.","Organization involves assigning tasks to individuals without considering their abilities.","Organization is a foundation upon which the whole structure of management can be built."],"answer":"D"},{"id":5,"q":"What is a key characteristic of an effective organization?","options":["Ignoring the principles of equality in job division.","Assigning tasks based on personal preferences.","Defining personnel positions, rights, and responsibilities clearly.","Allotting rights and authority based on friendship rather than suitability."],"answer":"C"},{"id":6,"q":"Which of the following processes represents the nature of organization?","options":["Distributing tasks randomly without any plan.","Establishing positions without any consideration of authority.","Selecting personnel based on their personal preferences.","Subdividing main work into small groups, allocating jobs, allotting authority, and determining positions at different levels."],"answer":"D"},{"id":7,"q":"What does an effective organization rely on to achieve tasks set forth before it?","options":["An elaborate set of random rules.","Complex decision-making processes.","A foundation upon which management is built.","Strict control over individual creativity and innovation."],"answer":"C"},{"id":8,"q":"What does the term \"organization\" refer to?","options":["A chaotic process lacking any structure.","A rigid system of command and control.","A dynamic process integrating activities to achieve objectives.","A one-time event unrelated to management."],"answer":"C"},{"id":9,"q":"Which of the following is NOT a characteristic of organization?","options":["Clear definition of personnel positions, rights, and responsibilities.","Allocation of tasks randomly without any planning.","Communication of rules and instructions to all stakeholders.","Direction provided by management."],"answer":"C"},{"id":10,"q":"What best describes the nature of organization, as mentioned?","options":["Division of work based on individual preferences.","Allocation of jobs without considering suitability.","Establishment of positions without any criteria","Subdivision of main work, selection of suitable personnel, allocation of jobs, allotment of authority, and determination of positions at different levels."],"answer":"D"},{"id":11,"q":"Why is organization important in a business context?","options":["It hinders productivity and complicates management.","It stifles creativity and restricts employee roles.","It simplifies management, encourages specialization, and increases productivity.","It replaces the need for management decisions."],"answer":"C"},{"id":12,"q":"What role does organization play in management?","options":["It is an unnecessary overhead, adding complexity.","It enforces strict control over individual initiatives.","It is the primary foundation on which effective management is built.","It discourages specialization and teamwork."],"answer":"C"},{"id":13,"q":"What is a central aspect of an effective organization?","options":["Ignoring communication and rules.","Treating all employees equally.","Clear definition of personnel roles and responsibilities.","Relying solely on top-down authority."],"answer":"C"},{"id":14,"q":"What process characterizes the nature of organization?","options":["Assigning tasks randomly without any structure.","Establishing positions based on personal preferences.","Selecting employees without considering suitability.","Subdividing main work, selecting suitable personnel, allocating tasks, allotting authority, and determining positions at various levels."],"answer":"D"},{"id":15,"q":"Why is organization considered a necessary foundation?","options":["It complicates management processes.","It serves as a substitute for managerial decisions.","It simplifies management, encourages innovation, and enhances productivity.","It stifles employee creativity and individuality."],"answer":"C"},{"id":16,"q":"In the context of management, what is the key outcome of an effective organization?","options":["Increased complexity and bureaucracy.","Reduced employee involvement.","Simplified processes and improved productivity.","Isolation of managers from employees."],"answer":"C"},{"id":17,"q":"What does the term \"entrepreneur\" typically refer to?","options":["A person who only buys products.","A business owner.","An individual who starts their own business.","An employee working in a large corporation."],"answer":"C"},{"id":18,"q":"Which thinker introduced the dimension of risk-taking as a characteristic of entrepreneurship?","options":["Alfred Marshall.","Max Weber.","Richard Cantillon.","Frank Knight."],"answer":"D"},{"id":19,"q":"According to Frank Knight`s Risk Bearing Theory, how does the entrepreneur earn profit?","options":["By exploiting their employees.","By investing heavily in marketing.","By effectively managing production processes.","By taking risks and anticipating future events."],"answer":"D"},{"id":20,"q":"According to Alfred Marshall, which of the following factors is considered the driving force that brings together land, labor, capital, and organization?","options":["Capital.","Labor.","Land","Entrepreneurship."],"answer":"D"},{"id":21,"q":"What is a central characteristic of Max Weber’s Sociological Theory of entrepreneurship?","options":["The entrepreneur`s ability to innovate.","The entrepreneur`s risk-taking ability.","The entrepreneur`s role expectations based on society`s norms and values.","The entrepreneur`s ability to form successful partnerships."],"answer":"C"},{"id":22,"q":"What does Mark Casson`s Economic Theory suggest is the demand for entrepreneurship arising from?","options":["Technological advancement.","Government policies.","Change and economic conditions.","Cultural shifts."],"answer":"C"},{"id":23,"q":"Which major characteristic does Joseph Schumpeter’s Innovation Theory attribute to entrepreneurs?","options":["Risk-taking ability.","Organizational skills.","Creativity, foresight, and innovation.","Leadership skills."],"answer":"C"},{"id":24,"q":"According to Israel Kirzner, what is a more characteristic aspect of entrepreneurship compared to innovation?","options":["Creativity.","Risk-taking.","Alertness to recognize opportunity.","Resource management."],"answer":"C"},{"id":25,"q":"Which theory emphasizes the entrepreneurial motive derived from the need for achievement and power?","options":["Frank Knight`s Risk Bearing Theory.","Mark Casson`s Economic Theory.","Max Weberâ€TMs Sociological Theory.","McClellandâ€TMs Theory of Achievement Motivation."],"answer":"D"},{"id":26,"q":"What does Peter Drucker`s Theory of Entrepreneurship emphasize as the keys to entrepreneurship?","options":["Financial resources and market knowledge.","Innovation, resources, and an entrepreneurial behavior.","Specialization and technical skills.","Networking and affiliations."],"answer":"B"},{"id":27,"q":"What consensus do economists share about entrepreneurship despite differences in theories?","options":["Entrepreneurs are primarily motivated by external incentives.","Entrepreneurs are best defined as people who imitate others`innovations.","Entrepreneurship is a distinct concept and a central factor of economic activity.","Entrepreneurship is solely determined by cultural factors."],"answer":"C"},{"id":28,"q":"Which of the following characteristics is NOT associated with entrepreneurship?","options":["Foresight on demand and supply changes.","Technical knowledge.","Good leadership skills.","Willingness to take risks."],"answer":"C"},{"id":29,"q":"What was Richard Cantillon`s contribution to the definition of entrepreneurship?","options":["He introduced the concept of risk-taking.","He classified economic agents into landowners, hirelings, and entrepreneurs.","He emphasized the role of innovation in entrepreneurship.","He identified entrepreneurship as a process of integrating and coordinating activities to achieve goals."],"answer":"D"},{"id":30,"q":"According to Jean Baptise Say, how does the entrepreneur contribute to the economy?","options":["By maximizing profits through exploitation.","By performing various roles in the business.","By bringing people together to build productive items.","By creating new technologies and products."],"answer":"C"},{"id":31,"q":"What does Max Weber emphasize as the driving force of entrepreneurship in his sociological theory?","options":["Economic factors.","Government regulations.","Religious beliefs, taboos, and customs.","Technological advancements."],"answer":"C"},{"id":32,"q":"According to Leibenstein`s Theory of Entrepreneurship, what is a primary trait of entrepreneurs?","options":["Innovation and creativity.","Recognition of market trends and profitable activities.","Ability to manage employees effectively.","Extensive knowledge of the industry."],"answer":"B"},{"id":33,"q":"Which economic factor discourages entrepreneurship according to Mark Casson`s Economic Theory?","options":["Taxation policy.","Easy access to finance on favorable terms.","Availability of raw materials.","Lack of technology and infrastructure."],"answer":"D"},{"id":34,"q":"What does McClelland`s Theory of Achievement Motivation suggest about entrepreneurs?","options":["They are primarily motivated by external incentives.","They are motivated by the need for affiliation.","They focus on internal motivation and need for achievement.","They are mainly driven by the need for power."],"answer":"C"},{"id":35,"q":"According to Israel Kirzner`s Theory of Entrepreneurship, what is the transformation of spontaneous learning to conscious knowledge motivated by?","options":["Social recognition and fame.","The desire for creative expression.","Monetary gain.","The need for power."],"answer":"C"},{"id":36,"q":"What is a central characteristic of Peter Drucker`s Theory of Entrepreneurship?","options":["Emphasis on imitation and adaptation.","Combination of existing resources in a new productive way.","Resource management and financial planning.","Increase in value or satisfaction to the customer from the resource."],"answer":"D"},{"id":37,"q":"What is the main focus of Alfred Marshall`s Theory of Entrepreneurship?","options":["Innovation and creativity.","Organizational structure and management.","Land, labor, capital, and organization as the driving factors.","Social and cultural factors influencing entrepreneurship."],"answer":"C"},{"id":38,"q":"In Mark Casson`s Economic Theory, what condition encourages entrepreneurship?","options":["Limited availability of raw materials.","Stringent taxation policies.","Industrial policies that promote competition.","Conducive economic conditions."],"answer":"D"},{"id":39,"q":"According to Max Weber`s Sociological Theory, what is the role of religion in driving entrepreneurship?","options":["It has no influence on entrepreneurial behavior.","It shapes role expectations and societal norms.","It emphasizes risk-taking and innovation.","It promotes materialistic desires."],"answer":"B"},{"id":40,"q":"How does Israel Kirzner define entrepreneurship in his theory?","options":["As a creative endeavor driven by innovation.","As a process of combining resources to create value.","As the transformation of spontaneous learning into conscious knowledge motivated by the prospects of gain.","As a competitive struggle for market dominance."],"answer":"C"},{"id":41,"q":"What is a key aspect of Leibenstein`s Theory of Entrepreneurship?","options":["Entrepreneurship is driven solely by profit-seeking motives.","Entrepreneurs are primarily risk-takers.","Entrepreneurs are gap-fillers who recognize market trends and develop new goods or processes.","Entrepreneurship is a result of conducive economic conditions."],"answer":"C"},{"id":42,"q":"What aspect of entrepreneurship does Peter Drucker`s Theory emphasize?","options":["Government regulations and policies.","Innovation, resources, and an entrepreneurial behavior.","Imitation and adaptation to market trends.","Focus on formal education and training."],"answer":"B"},{"id":43,"q":"Which theory considers uncertainty as a factor of production and views the entrepreneur as acting in anticipation of future events?","options":["Leibenstein`s Theory of Entrepreneurship.","Max Weber`s Sociological Theory.","Frank Knight`s Risk Bearing Theory.","Israel Kirznerâ€TMs Theory of Entrepreneurship."],"answer":"C"},{"id":44,"q":"What characteristic is emphasized by McClelland`s Theory of Achievement Motivation?","options":["The need for affiliation.","The ability to imitate and adapt to market trends.","The need for power and control.","The need for achievement and the drive to accomplish significant tasks."],"answer":"D"},{"id":45,"q":"What does the term \"entrepreneurial culture\" refer to?","options":["The set of laws and regulations that govern entrepreneurship.","The genetic predisposition for entrepreneurship.","The social and cultural values that support and encourage entrepreneurship.","The innate abilities and skills of an entrepreneur."],"answer":"C"},{"id":46,"q":"Which of the following is the main factor that influences the growth of entrepreneurship?","options":["Genetic traits of individuals.","Economic conditions and technology.","Government policies and regulations.","Social values, culture, and environmental factors."],"answer":"D"},{"id":47,"q":"Why is understanding the cultural environment important for entrepreneurs?","options":["To manipulate government policies in their favor.","To avoid risks and uncertainties in business.","To predict future economic conditions.","To better understand behavior and conduct of people and predict their actions in relation to entrepreneurship."],"answer":"D"},{"id":48,"q":"According to Max Weber, what role does social culture play in the emergence of entrepreneurship?","options":["Social culture has no influence on entrepreneurship.","It determines the amount of risk an entrepreneur is willing to take.","It creates a supportive environment for entrepreneurship.","It encourages entrepreneurs to focus on short-term goals."],"answer":"C"},{"id":49,"q":"Which of the following aspects of culture can influence an entrepreneur`s behavior?","options":["Government regulations and policies.","Economic trends and technology advancements.","Environmental pressures and religious beliefs.","All of the options."],"answer":"D"},{"id":50,"q":"What role does family background play in shaping entrepreneurial instincts?","options":["It has no impact on an individual`s entrepreneurial tendencies.","It determines an individual`s genetic predisposition for entrepreneurship.","Growing up in a business environment increases the probability of becoming an entrepreneur.","Family background has no influence on an individual`s career choices."],"answer":"C"},{"id":51,"q":"Why do family enterprises often play a major role in regional and local economics?","options":["Family enterprises receive more government support.","Family businesses tend to be larger in scale.","Family enterprises have a positive attitude towards growth and are cost-efficient.","Family enterprises are exempt from taxes and regulations."],"answer":"C"},{"id":52,"q":"What is the key takeaway about the influence of culture on entrepreneurship?","options":["Culture has no impact on entrepreneurship.","Genetic traits are the sole determinant of entrepreneurial success.","Culture provides a framework within which individuals can pursue entrepreneurial opportunities.","Entrepreneurship is purely driven by technological advancements."],"answer":"C"},{"id":53,"q":"Which of the following factors are considered part of the cultural values that influence entrepreneurship?","options":["Government regulations and taxation.","Economic conditions and technological advancements.","Social values, religious beliefs, and customs.","Access to raw materials and financial support."],"answer":"C"},{"id":54,"q":"What does entrepreneurial culture imply?","options":["A set of economic factors that determine success in business.","A collection of laws and regulations that support entrepreneurship.","A combination of personal traits and skills that make a successful entrepreneur.","A set of values, norms, and traits that are conducive to the growth of entrepreneurship."],"answer":"D"},{"id":55,"q":"What role does family play in shaping entrepreneurial instincts?","options":["Family has no impact on an individual`s entrepreneurial tendencies.","Entrepreneurial instincts are solely determined by genetics.","Growing up in a business-oriented family environment can influence an individual`s propensity towards entrepreneurship.","Family background has no connection to an individual`s career choices."],"answer":"C"},{"id":56,"q":"According to Max Weber`s sociological theory, how does religion influence entrepreneurship?","options":["Religion has no impact on entrepreneurship.","Religion fosters a spirit of laziness and complacency.","Religious beliefs create an environment that encourages entrepreneurial behavior.","Religion limits an entrepreneur`s ability to take risks."],"answer":"C"},{"id":57,"q":"What do sociologists like Max Weber argue about entrepreneurship and cultural values?","options":["Cultural values have no influence on entrepreneurship.","Entrepreneurship is determined solely by government policies.","Cultural values, social sanctions, and role expectations contribute to the emergence of entrepreneurship.","Entrepreneurship is a universal phenomenon unaffected by culture."],"answer":"C"},{"id":58,"q":"Why is understanding cultural values important for entrepreneurs?","options":["Cultural values are irrelevant to the business environment.","It helps entrepreneurs manipulate the stock market.","It enables entrepreneurs to better predict consumer behavior and market trends.","Cultural values have no impact on business decisions."],"answer":"C"},{"id":59,"q":"What distinguishes successful family businesses from unsuccessful ones?","options":["Family businesses have no impact on regional economies.","Family businesses are more likely to fail than non-family businesses.","Successful family businesses are committed to growth, continuity, and close interaction between family and business.","Family businesses are less cost-efficient than other firms."],"answer":"C"},{"id":60,"q":"Why does the entrepreneurial ability to \"read\" opportunities depend on culture?","options":["Entrepreneurs can predict opportunities based on their personal experiences.","Culture provides entrepreneurs with innate abilities to foresee trends.","Culture gives entrepreneurs a higher sensitivity to what others are looking for, enabling them to identify opportunities.","Entrepreneurial opportunities are determined solely by economic conditions."],"answer":"C"},{"id":61,"q":"What does the entrepreneurial ability to \"read\" opportunities mean?","options":["Entrepreneurs can predict the stock market with accuracy.","Entrepreneurs can foresee technological advancements.","Entrepreneurs have a knack for predicting consumer behavior.","Entrepreneurs are sensitive to market demands and can identify overlooked opportunities."],"answer":"D"},{"id":62,"q":"What are some common barriers that limit enterprise across most nations?","options":["Regulatory barriers only.","Cultural and social barriers only.","Financial and economic barriers only.","Regulatory, cultural and social, and financial and economic barriers."],"answer":"D"},{"id":63,"q":"Which of the following is an example of a regulatory barrier to entrepreneurial activity?","options":["Lack of access to social and business networks.","Limited knowledge of the available institutions.","Fear of failure.","Complex and different procedures for creating various legal forms of enterprises."],"answer":"D"},{"id":64,"q":"How can employment regulation impact entrepreneurial activity?","options":["It encourages larger firm sizes and more investment in technology.","It enhances management flexibility.","It discourages smaller firm sizes, research and development, and investment in technology.","It has no impact on entrepreneurial activity."],"answer":"C"},{"id":65,"q":"What is one way to address the cultural barrier of fear of failure?","options":["Introducing complex legal procedures.","Promoting entrepreneurial culture and role models to reduce the stigma of failure.","Increasing the legal consequences of failure.","Providing access to financial networks."],"answer":"B"},{"id":66,"q":"Why do newer and smaller growth firms often face barriers in raising risk capital?","options":["They have access to efficient capital markets.","They lack motivation to grow.","Their business objectives are not well-defined.","They depend on external sources of finance and face market barriers that prevent them from raising sufficient risk capital."],"answer":"D"},{"id":67,"q":"How do regulatory and administrative burdens impact entrepreneurial activity?","options":["They have no impact on entrepreneurial activity.","They enhance entrepreneurial motivation.","They impose adverse effects on entrepreneurial activity.","They lead to improved access to risk capital."],"answer":"C"},{"id":68,"q":"How can cultural and social barriers impact the creation of enterprises?","options":["They eliminate the need for business networks.","They enhance language skills among entrepreneurs.","They encourage entrepreneurs to take on excessive risk.","They limit the integration of entrepreneurs, hinder access to networks, and lack of information about supporting institutions."],"answer":"D"},{"id":69,"q":"What is the role of promoting an entrepreneurial culture in overcoming barriers to entrepreneurship development?","options":["It increases language barriers.","It reduces the need for risk-taking among entrepreneurs.","It improves motivation, risk-taking appetite, skills, and knowledge needed for enterprise creation.","It increases the fear of failure among entrepreneurs."],"answer":"C"},{"id":70,"q":"Which of the following is NOT a potential financial and economic barrier to entrepreneurial practice?","options":["Limited access to risk capital.","Lack of access to financial networks.","Efficient capital markets for larger firms.","Dependence on external sources of finance for growth."],"answer":"D"},{"id":71,"q":"How do regulatory and administrative burdens impact entrepreneurial activity?","options":["They have no impact on entrepreneurial activity.","They enhance entrepreneurial motivation.","They impose adverse effects on entrepreneurial activity.","They lead to improved access to risk capital."],"answer":"C"},{"id":72,"q":"Which type of barrier includes limited access to risk capital, both for seed/early stage and longer-term financing?","options":["Cultural and social barriers.","Economic and financial barriers.","Regulatory barriers.","Language barriers."],"answer":"B"},{"id":73,"q":"Which of the following is a potential cultural barrier to entrepreneurial practice?","options":["Access to financial networks.","Lack of business networks.","Promoting entrepreneurial culture and role models.","Fear of failure."],"answer":"D"},{"id":74,"q":"Why might exit barriers discourage entry into entrepreneurship?","options":["Because exit and entry rates are unrelate","Because entry does not involve risk.","Because exit and entry rates are closely related.","Because exit barriers encourage risk-taking."],"answer":"C"},{"id":75,"q":"What is the primary focus of regulatory barriers?","options":["Impact on personal skills and knowledge.","Encouraging innovation and creativity.","Ensuring efficient capital markets.","Providing a conducive business environment."],"answer":"D"},{"id":76,"q":"How does religion influence entrepreneurship according to Max Weber`s perspective?","options":["Religion has no impact on entrepreneurship.","Religion discourages entrepreneurship.","Religion drives entrepreneurship through economic freedom and private enterprise.","Religion is unrelated to the entrepreneurial process."],"answer":"C"},{"id":77,"q":"What role do networks play in overcoming barriers to entrepreneurial practice?","options":["Networks have no impact on overcoming barriers.","Networks create cultural and social barriers.","Networks provide access to financial capital.","Networks can provide information, communication, and resources, which are important tools for overcoming barriers."],"answer":"D"},{"id":78,"q":"Which of the following factors is NOT a barrier faced by startups and smaller growth firms?","options":["Access to external sources of finance.","Market barriers preventing the raising of risk capital.","Efficient capital markets.","Dependence on risk-taking entrepreneurs for growth."],"answer":"D"},{"id":79,"q":"Why is creating an entrepreneurial culture important for overcoming barriers?","options":["It eliminates the need for access to networks.","It reduces the complexity of legal procedures.","It increases the risk of failure for entrepreneurs.","It improves motivation, skills, knowledge, and risk-taking appetite, factors that can inhibit the creation of enterprises."],"answer":"D"},{"id":80,"q":"Which of the options is one of the primary benefits of entrepreneurs creating new businesses?","options":["Decreasing competition among existing businesses.","Centralizing economic power within large corporations.","Generating jobs for themselves and their employees.","Reducing productivity through operational changes."],"answer":"C"},{"id":81,"q":"What is a key role of entrepreneurs in the economy and society?","options":["Generating income solely for themselves.","Focusing on large-scale production.","Providing security to others in the society.","Broadening the base of participation in society and creating jobs."],"answer":"D"},{"id":82,"q":"How does entrepreneurship contribute to economic growth?","options":["By restricting innovation to large corporations.","By focusing solely on generating income.","By increasing competition among businesses.","By introducing innovations and opening new markets."],"answer":"D"},{"id":83,"q":"Which term describes the central ingredient in economic growth driven by entrepreneurs?","options":["Expansion.","Stability.","Innovation.","Standardization."],"answer":"C"},{"id":84,"q":"What is the significance of entrepreneurs in the commercial introduction of new products and services?","options":["They tend to copy existing products and services.","They rarely have an impact on new markets.","They play a minor role in changing consumer behavior.","They are responsible for the commercial introduction of many new products and services."],"answer":"D"},{"id":85,"q":"How do innovations provided by entrepreneurs improve the quality of life for consumers?","options":["By limiting consumer choices.","By making life more complicate","By offering only essential goods and services.","By enriching people`s lives in numerous ways, such as improving communication and providing new forms of entertainment."],"answer":"D"},{"id":86,"q":"What does the Global Entrepreneurship Monitor (GEM) project emphasize about entrepreneurial behavior?","options":["It has no impact on innovation and growth.","It is unrelated to unexploited opportunities.","It hinders the development of the economy.","It is a crucial engine of innovation and growth, implying attention and willingness to take advantage of unexploited opportunities."],"answer":"D"},{"id":87,"q":"What role can entrepreneurs play in the developing world?","options":["They primarily contribute to large corporations.","They play a minimal role in job creation.","They are not relevant to poverty reduction.","They are primary engines of job creation and poverty reduction."],"answer":"D"},{"id":88,"q":"Why might governments wish to encourage entrepreneurship through policies?","options":["To limit innovation and growth in the economy.","To centralize economic power within large corporations.","To decrease job opportunities for individuals.","To promote economic growth, job creation, and poverty reduction."],"answer":"D"},{"id":89,"q":"What is a key characteristic of entrepreneurship that contributes to economic growth?","options":["Resistance to change.","Adaptation to the status quo.","Aversion to innovation.","Embrace of change and willingness to exploit it as an opportunity."],"answer":"D"},{"id":90,"q":"How do entrepreneurs contribute to expanding consumer choices?","options":["By limiting the availability of products and services.","By focusing on standardized offerings.","By providing goods and services for needs consumers didn`t realize they had.","By encouraging consumers to choose only essential products."],"answer":"C"},{"id":91,"q":"What is the role of small businesses in the economy?","options":["They tend to centralize economic power.","They have minimal impact on job creation.","They are engines of job creation and decentralize economic power.","They primarily offer standardized products and services."],"answer":"C"},{"id":92,"q":"What impact can successful small businesses have on the developing world?","options":["They may not contribute significantly to job creation.","They tend to hinder economic growth.","They are key drivers of job creation and poverty reduction.","They primarily focus on generating income for themselves."],"answer":"C"},{"id":93,"q":"What is the significance of the Global Entrepreneurship Monitor (GEM) project?","options":["It focuses on discouraging entrepreneurial behavior.","It is a study limited to one country.","It highlights the negative impact of entrepreneurs on growth.","It emphasizes that entrepreneurial behavior is a crucial engine of innovation and growth."],"answer":"D"},{"id":94,"q":"How do entrepreneurs contribute to technological advancements?","options":["They tend to slow down technological progress.","They have no influence on technological changes.","They often introduce innovations that revolutionize how people live and work.","They mainly focus on imitation rather than innovation."],"answer":"C"},{"id":95,"q":"What are entrepreneurs responsible for in terms of new products and services?","options":["They have no role in introducing new products.","They copy existing products without innovation.","They commercialize and introduce many new products and services.","They primarily focus on disrupting existing markets."],"answer":"C"},{"id":96,"q":"What term refers to the factors that affect a business from outside its walls?","options":["Internal factors.","Competitive factors.","External factors or influences.","Business dynamics."],"answer":"C"},{"id":97,"q":"Which factor often affects a business the most by determining how other businesses compete with its products?","options":["Legal factors.","Social factors.","Economic factors.","Degree of competition."],"answer":"D"},{"id":98,"q":"How might changes in government policy impact a business?","options":["They have no impact on business operations.","They lead to increased competition.","They can affect business operations through political factors.","They influence technological advancements."],"answer":"C"},{"id":99,"q":"Which factor refers to the rapid pace of change in production processes and product innovation?","options":["Economic factors.","Political factors.","Technological factors.","Ethical factors."],"answer":"C"},{"id":100,"q":"Why could markets change rapidly?","options":["Due to constant demand","Due to rigid competition.","Due to government subsidies.","Due to new needs and wants, new competitors, technological advancements, or global events."],"answer":"D"},{"id":101,"q":"How might a business react to increased competition?","options":["Increase costs to improve quality.","Cut costs by reducing product quality.","Spend more on promotion and advertising.","All of the options."],"answer":"D"},{"id":102,"q":"What do businesses need to consider in terms of social responsibility?","options":["Government regulations.","Customer feedback.","The impact of their actions on different parts of society they interact with.","Financial profits only."],"answer":"C"},{"id":103,"q":"What are the extra benefits and costs that a business action can lead to called?","options":["Private benefits and costs.","Externalities - external costs and benefits.","Social benefits and social costs.","Economic incentives and penalties."],"answer":"B"},{"id":104,"q":"What is the term for the main factor that affects how fiercely other businesses compete with the products a business makes?","options":["Economic factors.","Competitive factors.","Political factors.","Technological factors."],"answer":"B"},{"id":105,"q":"How might a business respond to the entrance of new competitors in a market?","options":["Reduce prices to attract more customers.","Improve product quality to stand out.","Increase advertising and brand loyalty efforts.","All of the options."],"answer":"D"},{"id":106,"q":"What do economists and experts agree about the role of entrepreneurship in an economy?","options":["It has no impact on economic vitality.","It is only relevant in developed economies.","It is essential for the vitality of any economy, whether developed or developing.","It is primarily important for large corporations."],"answer":"C"},{"id":107,"q":"Which type of market tends to have close rivalry among many small rival businesses?","options":["A market with few large rival firms.","A market with rapidly changing technology.","A market with a few competitors.","A market with many small rival businesses."],"answer":"D"},{"id":108,"q":"What is the term for the extra benefits and costs of a business action that go beyond direct benefits to the business and its customers?","options":["Externalities - external costs and benefits.","Social benefits and social costs.","Private benefits and costs.","Ethical benefits and costs."],"answer":"B"},{"id":109,"q":"What is the main reason markets change rapidly?","options":["Government policies.","New technologies.","Stagnation in the economy.","Changes in customer needs, new competitors, technological advancements, or global events."],"answer":"D"},{"id":110,"q":"What role does innovation play in entrepreneurship and economic growth?","options":["It has no impact on growth.","It is important for small businesses only.","Innovation is central to economic growth and is a core aspect of entrepreneurship.","Innovation is primarily important for large corporations."],"answer":"C"},{"id":111,"q":"What factor involves how consumers, households, and communities behave and their beliefs?","options":["Legal factors.","Economic factors.","Political factors.","Social factors."],"answer":"D"},{"id":112,"q":"How might a business respond to an increase in competition, such as the launch of a rival product?","options":["Increase prices to maximize profits.","Lower product quality to reduce costs.","Spend less on promotion and advertising.","Cut costs, improve quality, and increase promotion efforts."],"answer":"D"},{"id":113,"q":"What is one of the first factors to consider when assessing the potential of a business opportunity?","options":["The profitability of the opportunity.","The level of competition in the market.","The stability of the company associated with the opportunity.","The size of the niche market."],"answer":"C"},{"id":114,"q":"What makes business opportunities that target niche markets appealing?","options":["They have the potential for high profits.","They involve well-established companies.","They offer products with a broad appeal.","They address needs often overlooked by others."],"answer":"D"},{"id":115,"q":"What is a key factor in evaluating business opportunities?","options":["The level of competition in the market.","The financial base of the company.","The location of the company.","The comprehensive system for getting products to consumers, including production, sales, marketing, and delivery."],"answer":"D"},{"id":116,"q":"Why is the ability to satisfy orders quickly and efficiently important for a business opportunity?","options":["It allows the company to focus on niche markets.","It ensures the product`s broad appeal.","It helps the company build a loyal client base.","It reduces the need for sales and marketing strategies."],"answer":"C"},{"id":117,"q":"When considering different business opportunities, what is an important aspect to assess in terms of the return you will receive?","options":["The company`s financial stability.","The popularity of the product.","The size of the niche market.","Whether you will earn an equitable return in comparison to what you invest in terms of time and resources."],"answer":"D"},{"id":118,"q":"Why is it worth considering home-based business opportunities in today`s market?","options":["They require less investment of time and resources.","They have a proven track record of success.","They offer traditional business settings.","They often start with fresh business ideas and approaches."],"answer":"D"},{"id":119,"q":"What should be your approach if you see merit in a given business idea and believe it has a good chance of succeeding?","options":["Discard the idea and seek alternatives.","Wait for the competition to implement the ide","Look it over carefully and consider it as an investment opportunity.","Focus solely on traditional business settings."],"answer":"C"},{"id":120,"q":"What is the term used to describe the external factors that influence a business and can affect its operations and objectives?","options":["Internal influences","Operational conditions","Competitive factors","External factors or influences"],"answer":"D"},{"id":121,"q":"Which of the following is an example of a political factor that can influence a business?","options":["Changes in customers`preferences","Fluctuations in exchange rates","Advances in technology","Government policy changes"],"answer":"D"},{"id":122,"q":"Why is it important for a business to assess the stability of a company associated with a new business opportunity?","options":["To ensure the company is a well-established competitor.","To identify potential market threats.","To guarantee an equitable return on investment.","To have some assurance that the company will be around long enough to benefit from the opportunity and recoup investments."],"answer":"D"},{"id":123,"q":"What type of market is likely to have less fierce competition and allow a company to establish itself as the industry standard?","options":["A market with a few large rival firms.","A rapidly changing market.","A market with many small rival businesses.","A niche market"],"answer":"D"},{"id":124,"q":"What are externalities in the context of business opportunities?","options":["Business practices that directly affect customers.","Factors that primarily affect the internal operations of a business.","Extra costs and benefits that are above and beyond the direct costs and benefits of the business, often imposed on society.","Profits generated by a business opportunity."],"answer":"C"},{"id":125,"q":"What is one of the key factors to consider when assessing the potential of a home-based business opportunity?","options":["The size of the investment requires","The number of competitors in the market.","The number of products offered by the business.","The freshness and novelty of the business idea."],"answer":"D"},{"id":126,"q":"What is the main goal when assessing a business opportunity`s potential return in comparison to the investment?","options":["To earn a return regardless of the investment.","To ensure the highest possible return on investment.","To achieve a return that is equitable and justifiable in relation to the time and resources invested.","To maximize the investment with minimal effort."],"answer":"C"},{"id":127,"q":"What is intellectual property in the context of entrepreneurship?","options":["Tangible assets owned by an entrepreneur.","Valuable financial investments.","Creative works protected by copyrights.","Certain intellectual creations with commercial value and legal property rights."],"answer":"D"},{"id":128,"q":"What is the purpose of intellectual property law in relation to innovation?","options":["To encourage competition among creators.","To prevent the copying of ideas by competitors.","To limit the time period for profiting from new ideas.","To regulate the pricing of intellectual property."],"answer":"D"},{"id":129,"q":"What is the main reason for an entrepreneur to protect intellectual property?","options":["To eliminate competition from the market.","To recover development costs for new ideas.","To prevent others from using similar trademarks.","To discourage innovation and creativity."],"answer":"D"},{"id":130,"q":"Which form of intellectual property grants an inventor the exclusive right to make, use, and sell an invention for a fixed period?","options":["Copyright","Trade secret","Patent","Trademark"],"answer":"C"},{"id":131,"q":"What is the purpose of a copyright?","options":["To protect the idea behind a creative work.","To prevent competitors from selling similar products.","To protect the form in which an original work appears.","To restrict access to copyrighted materials."],"answer":"C"},{"id":132,"q":"Which form of intellectual property consists of knowledge kept secret for a business advantage?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"C"},{"id":133,"q":"What is the main requirement for a trade secret to be valid?","options":["It must be registered with intellectual property authorities.","It must be disclosed to competitors for protection.","It must be protected through contracts and non-disclosure agreements.","It must be widely known and available to the public"],"answer":"C"},{"id":134,"q":"What is the primary function of a trademark?","options":["To indicate the source of goods and distinguish them from others.","To protect creative works of authors and composers.","To grant the exclusive right to reproduce a product.","To prevent competitors from using any similar words."],"answer":"A"},{"id":135,"q":"What is a significant characteristic of trademarks compared to copyrights or patents?","options":["Trademarks provide protection for a fixed period of time.","Trademarks can be enforced without registration.","Trademarks cannot be renewed after expiration.","Trademarks can be renewed endlessly."],"answer":"D"},{"id":136,"q":"Which intellectual property form is exemplified by the use of the symbol (®) to indicate registration?","options":["Copyright","Trade secret","Patent","Trademark"],"answer":"D"},{"id":137,"q":"What type of intellectual property protects a symbol, word, or design used to indicate the source of goods?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"D"},{"id":138,"q":"What is the duration of patent protection in most countries?","options":["Up to 5 years","Up to 10 years i","Up to 15 years","Up to 20 years"],"answer":"D"},{"id":139,"q":"What is the primary goal of protecting intellectual property rights?","options":["To stifle competition among businesses","To encourage copying of innovative ideas","To provide creators with time to profit from new ideas and recover development costs","To limit the scope of intellectual property laws"],"answer":"C"},{"id":140,"q":"Which form of intellectual property protection is especially valuable for preserving unique manufacturing processes and business plans?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"C"},{"id":141,"q":"Why might a business choose to license or sell its intellectual property?","options":["To eliminate competition","To share profits with competitors","To generate additional revenue","To protect ideas from imitation"],"answer":"C"},{"id":142,"q":"What type of intellectual property protects original creative works of authors and composers?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"A"},{"id":143,"q":"What does a trademark signify?","options":["A unique manufacturing processes","Exclusive ownership of an idea","The source of goods and their distinction from others","The registration of a new company"],"answer":"C"},{"id":144,"q":"What does a trade secret protect?","options":["The idea behind a product","The form in which a creative work appears","A unique manufacturing processes","Knowledge kept secret for business advantage"],"answer":"D"},{"id":145,"q":"What is the primary difference between patents and trade secrets?","options":["Patents are disclosed to the public, while trade secrets are not.","Patents are only used in technology-based industries.","Patents protect creative works, while trade secrets protect product designs.","Patents grant exclusive rights for a fixed period, while trade secrets rely on confidentiality."],"answer":"D"},{"id":146,"q":"What type of intellectual property focuses on the exclusive right to reproduce creative works and prepare derivative versions?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"A"},{"id":147,"q":"What is the primary purpose of copyright protection?","options":["To prevent the creation of new works","To encourage imitation of creative works","To give creators the sole right to publish and sell their work","To promote the use of copyrighted materials by others"],"answer":"C"},{"id":148,"q":"Which type of intellectual property protection gives inventors exclusive rights over the use of their inventions?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"B"},{"id":149,"q":"What is the legal term for the violation of copyright?","options":["Infringement","Plagiarism","Counterfeiting","Dissemination"],"answer":"A"},{"id":150,"q":"What is the key distinction between patents and copyrights?","options":["Patents protect the expression of an idea, while copyrights protect the application of an ide","Patents protect original creative works, while copyrights protect inventions.","Patents are renewable, while copyrights expire.","Patents protect the application of an idea, while copyrights protect the expression of an ide"],"answer":"D"},{"id":151,"q":"Which international organization is Nigeria a member of in relation to intellectual property?","options":["World Health Organization","International Monetary Fund","World Trade Organization","United Nations Educational, Scientific and Cultural Organization"],"answer":"C"},{"id":152,"q":"What form of intellectual property covers the protection of original creative works such as books, musical compositions, and architecture?","options":["Patent","Trademark","Trade secret","Copyright"],"answer":"D"},{"id":153,"q":"What is the purpose of the Nigerian Copyright Commission?","options":["To create new copyright laws","To enforce patent rights","To launch advertising campaigns for copyrighted works","To take its mandate seriously and enforce copyright laws"],"answer":"D"},{"id":154,"q":"What factor may militate against effective copyright protection in Nigeria, according to Professor Uche Ewelukwa Ofodile?","options":["High levels of public consultation during law adoption","Lack of popular support for copyright laws","Extensive economic assessment of the costs and benefits of protection","Overemphasis on protecting the public domain over private rights"],"answer":"B"},{"id":155,"q":"What does the Paris Convention for the Protection of Industrial Property focus on?","options":["Copyright protection","Trademark protection","Industrial design protection","Protection of intellectual property rights"],"answer":"D"},{"id":156,"q":"Which of the following is NOT a main form of intellectual property rights?","options":["Copyright","Patent","Trade freedom","Trademark"],"answer":"D"},{"id":157,"q":"What does the term \"infringement\" refer to in the context of copyright?","options":["A legal device for protecting intellectual property","The process of obtaining a copyright","Violation of copyright protection rights","The process of registering a patent"],"answer":"C"},{"id":158,"q":"What distinguishes copyright from patents and trademarks?","options":["Copyright protects the expression of an idea, while patents protect original creative works.","Copyright is used to prevent competitors from benefiting from an individual`s or firm`s ideas.","Copyright protects tangible products, while patents protect intangible concepts.","Copyright protects the form in which an idea appears, while patents protect the application of an ide"],"answer":"D"},{"id":159,"q":"What is the role of intellectual property lawyers in relation to copyright?","options":["Creating original works for clients","Selling and licensing intellectual property rights","Advising on the protection and enforcement of intellectual property rights","Auditing and monitoring copyright legislation"],"answer":"C"},{"id":160,"q":"Which factor is identified by Professor Uche Ewelukwa Ofodile as contributing to the lack of effective copyright protection in Nigeria?","options":["Extensive public awareness campaigns","Inclusion of intellectual property courses in law school curricula","Efficient customs enforcement","Corruption and weak customs enforcement"],"answer":"D"},{"id":161,"q":"What type of intellectual property protection is granted to an inventor for a fixed period, usually up to 20 years?","options":["Copyright","Trade secret","Patent","Trademark"],"answer":"C"},{"id":162,"q":"What is the primary purpose of intellectual property law?","options":["To restrict access to creative works","To encourage imitation and replication of ideas","To protect the interests of the consuming public","To encourage innovation by granting creators time to profit from their new ideas and recover development costs"],"answer":"D"},{"id":163,"q":"What is the significance of \"reciprocal extension of protection\" in copyright law?","options":["It grants exclusive rights to copyright holders.","It promotes the use of copyrighted materials by others.","It ensures that copyrighted works are distributed internationally.","It`s a miscellaneous topic covered by copyright law to ensure global protection of creative works."],"answer":"D"},{"id":164,"q":"Which intellectual property type protects symbols, words, or designs used to indicate the source of goods?","options":["Copyright","Trade secret","Patent","Trademark"],"answer":"D"},{"id":165,"q":"What is the main reason for developing strategies to protect intellectual property (IP) within a business?","options":["To promote collaboration with competitors","To create public awareness of the IP","To safeguard the products, processes, and creative inputs that generate business profits","To make the IP public knowledge for increased recognition"],"answer":"C"},{"id":166,"q":"What is the first step in a protection strategy for intellectual property?","options":["Selling the IP to a competitor","Demonstrating ownership of the IP","Keeping the IP a secret","Registering the IP"],"answer":"D"},{"id":167,"q":"Which of the following is NOT a type of intellectual property protection available?","options":["Patents","Trade secrets","Business licenses","Registered designs"],"answer":"D"},{"id":168,"q":"What is the purpose of a confidentiality or non-disclosure agreement in protecting intellectual property?","options":["To grant exclusive rights to the IP holder","To demonstrate ownership of the IP","To establish the time, date, and place of IP disclosure","To make the IP public knowledge"],"answer":"C"},{"id":169,"q":"Which step helps demonstrate ownership of an intellectual property idea?","options":["Creating multiple prototypes","Filing a lawsuit against potential infringers","Writing a detailed description of the idea and making copies","Mailing a sealed envelope with original documents describing the idea by registered mail"],"answer":"D"},{"id":170,"q":"What action should you take if you want to ensure that your idea is not infringing someone else`s IP?","options":["Discuss your idea openly to gather feedback","Apply for IP protection immediately","Search the IP Nigerian website to check for similar products covered by patents or trademarks","Keep your idea a secret and avoid any research"],"answer":"C"},{"id":171,"q":"Which type of IP protection involves describing your creation in detail to distinguish it from similar products?","options":["Copyright","Trademark","Patent","Trade secret"],"answer":"C"},{"id":172,"q":"What is the purpose of registering your IP through a patent attorney or an intellectual property lawyer?","options":["To gain immediate public recognition for your IP","To prevent others from using your IP","To describe your IP in minute detail for patent application","To establish ownership of your IP"],"answer":"D"},{"id":173,"q":"Why might it be necessary to use more than one type of IP protection for your creation?","options":["To confuse potential infringers","To increase the overall value of the IP","Different IP rights provide varying levels of protection, so more than one type might be needed to fully protect the creation","To discourage potential infringers from pursuing similar ideas"],"answer":"C"},{"id":174,"q":"What is the primary purpose of registering intellectual property (IP)?","options":["To increase public awareness of the IP","To prevent competitors from using similar ideas","To establish a legal framework for IP theft","To secure legal rights and protection for the IP"],"answer":"D"},{"id":175,"q":"Which of the following types of intellectual property protection involves protecting original creative works?","options":["Patents","Trademarks","Copyright","Trade secrets"],"answer":"C"},{"id":176,"q":"Why is it important to keep your intellectual property idea a secret before registering it?","options":["To prevent competitors from selling a similar product","To make your idea public knowledge for collaboration","To maintain a sense of mystery around your product","To avoid putting your business at risk and to ensure you have exclusive rights to the idea"],"answer":"D"},{"id":177,"q":"What is the purpose of mailing a sealed envelope with original documents describing your idea by registered mail?","options":["To prove that you are the first to create the idea","To receive feedback from potential partners","To get the idea patented quickly","To establish evidence of the time, date, and place of original thought"],"answer":"D"},{"id":178,"q":"Why is searching the IP Nigerian website important when protecting your intellectual property?","options":["To find potential partners for collaboration","To make your IP public knowledge for marketing purposes","To ensure that your idea is not infringing someone else`s IP","To demonstrate ownership of your IP to potential investors"],"answer":"D"},{"id":179,"q":"What is the main purpose of a confidentiality or non-disclosure agreement when discussing your idea with others?","options":["To prevent anyone from using or discussing the idea","To create a legally binding partnership agreement","To secure a loan for the development of the idea","To ensure that the person you`re disclosing the idea to keeps it confidential and doesn`t use it without permission"],"answer":"D"},{"id":180,"q":"What step should you take to demonstrate that an idea is yours when trying to protect your intellectual property?","options":["Create a website showcasing the idea","Share the idea openly on social media platforms","Make copies of the original documents and keep them at home","Write down the details of the idea, draw a picture, and mail it in a sealed envelope by registered mail"],"answer":"D"},{"id":181,"q":"Why is it important to consider multiple types of intellectual property protection for your creation?","options":["To increase the overall value of the creation","To ensure that no one else can use the idea","Different types of IP protection offer different levels of security, so using more than one type can provide comprehensive protection","To make the registration process faster and more efficient"],"answer":"C"},{"id":182,"q":"What is the relationship between technology and entrepreneurship?","options":["Technology is an independent entity that does not impact entrepreneurship","Entrepreneurship is the driving force behind technology development","Technology and entrepreneurship are tightly related, with technology being a means to an end","Entrepreneurship is a result of technological advancements"],"answer":"C"},{"id":183,"q":"What analogy does the GENS 202 material use to emphasize the importance of entrepreneurs understanding and using technology?","options":["Athlete and coach relationship","Chef and sous chef relationship","Musician and recording engineer relationship","Artist and art collector relationship"],"answer":"C"},{"id":184,"q":"Why is it important for entrepreneurs to be open and inquisitive about technology?","options":["To gain popularity among tech-savvy consumers","To compete with other entrepreneurs in the technology industry","To leverage technology in order to achieve their goals more quickly","To become experts in technology development"],"answer":"C"},{"id":185,"q":"What does the author of the GENS 202 material mean by stating that \"Technology is an accelerator\"?","options":["Technology speeds up the process of decision-making","Technology is the end goal of entrepreneurial endeavors","Technology accelerates the success of ideas when used effectively","Technology accelerates only bad ideas toward failure"],"answer":"C"},{"id":186,"q":"What is the primary message conveyed in the analogy of the musician and the recording studio?","options":["Entrepreneurs need to become engineers to create technology","Technology and entrepreneurship are separate entities","Entrepreneurs should focus solely on their core principles","Entrepreneurs must be able to effectively communicate their vision to technical experts"],"answer":"C"},{"id":187,"q":"How has computer technology impacted various sectors like education and health care?","options":["It has led to reduced longevity in many societies","It has contributed to the need for more labor in factories","It has made technological advancements irrelevant in these sectors","It has had an enormous impact by improving education and health care"],"answer":"D"},{"id":188,"q":"What is the downside to technological progress mentioned in the GENS 202 material?","options":["Increased reliance on labor in factories","The destruction of the human race due to nuclear weapons","The lack of innovation in developing countries","Pollution, environmental problems, and health-related issues"],"answer":"D"},{"id":189,"q":"Why is the transfer of technology important in both industrialized and developing countries?","options":["It leads to lower industrial capability and competitiveness","It helps industrialized countries establish dominance over developing countries","It allows countries to rely on self-sufficiency rather than global cooperation","It helps in attaining high industrial capability and competitiveness"],"answer":"D"},{"id":190,"q":"What does the example of Gillette and Wilkinson demonstrate?","options":["Gillette`s reluctance to share technology with Wilkinson","Wilkinson`s inability to effectively use Gillette`s technology","The importance of marketing superior products","The negative impact of technology transfer on a business"],"answer":"C"},{"id":191,"q":"What types of technology transfer have had a significant impact on developing countries?","options":["Political and economic technology transfers","Cultural and geographic technology transfers","Agricultural and health care technology transfers","Educational and entertainment technology transfers"],"answer":"C"},{"id":192,"q":"What is the core definition of technology?","options":["The process of generating ideas for new products","The technique for converting inputs to outputs in a specific task","The ability to communicate effectively using digital tools","The study of the natural world and its phenomena"],"answer":"B"},{"id":193,"q":"What distinguishes hard technology from soft technology?","options":["Hard technology involves physical products, while soft technology involves intangible concepts","Hard technology focuses on software development, while soft technology focuses on hardware design","Hard technology is capital-intensive, while soft technology is labor-intensive","Hard technology includes machinery and equipment, while soft technology includes management know- how and administrative techniques"],"answer":"D"},{"id":194,"q":"How has technology transformed various aspects of modern life?","options":["It has made life simpler and more stagnant","It has only had a significant impact on the economy","It has revolutionized consumer habits, education, and various other areas","It has primarily affected the character of political institutions"],"answer":"C"},{"id":195,"q":"Why is it crucial for organizations to stay abreast of changes in the technological environment?","options":["To maintain a traditional approach to business operations","To resist any competition from other organizations","To anticipate and counteract competition, and incorporate new designs into products","To avoid any negative impact of technological progress"],"answer":"C"},{"id":196,"q":"What is the negative consequence of not keeping up with technological advancements?","options":["Decreased reliance on capital-intensive technologies","Inability to compete with other organizations","Reduced emphasis on the development of labor-intensive technologies","Failure to incorporate new and innovative designs into products"],"answer":"D"},{"id":197,"q":"What is the primary message conveyed through the example of Gillette and Wilkinson Sword Blades?","options":["Sharing technology with other companies is always beneficial","Technology transfer is essential for business success","Failing to market a superior product can result in missed opportunities","Manufacturers should prioritize the development of garden tools over other products"],"answer":"C"},{"id":198,"q":"What is the significance of technology transfer for developing countries?","options":["It results in decreased reliance on agricultural productivity","It leads to reduced infant mortality rates and improved health care","It is primarily focused on introducing manufacturing technologies","It has no impact on the living conditions of the majority of the population"],"answer":"B"},{"id":199,"q":"What does the term \"capital-intensive\" mean in the context of technology?","options":["It refers to the cost of acquiring technology","It signifies the level of complexity in using technology","It represents the heavy reliance on labor for technology production","It indicates the use of a highly advanced technology that requires substantial capital investment"],"answer":"D"},{"id":200,"q":"How does technology contribute to economic development?","options":["By isolating countries from the global market","By causing inflation and economic instability","By reducing the need for international communication","By enabling the transfer of knowledge and improving industrial capability"],"answer":"D"},{"id":201,"q":"What is the role of multinational corporations in technology transfer?","options":["They hinder technology transfer by monopolizing resources","They invest abroad to expand production, marketing, and research activities, facilitating technology transfer","They primarily focus on exporting technology from developing to industrialized countries","They impede technology transfer by limiting their operations to a single country"],"answer":"B"},{"id":202,"q":"What does \"soft technology\" refer to?","options":["Technology that is easily breakable and fragile","Technology that is still in the experimental phase","Management know-how, finance, marketing, and administrative techniques","Technology that involves intricate mechanical components"],"answer":"C"},{"id":203,"q":"Why is staying updated with technology trends important for entrepreneurs?","options":["To develop a deep expertise in technical skills","To impress potential investors and partners","To align technology with their business goals and leverage it for success","To ensure their products have the latest user interfaces"],"answer":"C"},{"id":204,"q":"What role does technology play in the relationship between entrepreneurship and nature?","options":["It disconnects entrepreneurs from nature and reality","It enhances the control that entrepreneurs have over nature and their environment","It replaces nature entirely, making it irrelevant for entrepreneurship","It reduces the need for entrepreneurship due to technological advancements"],"answer":"B"},{"id":205,"q":"What is the primary purpose of technology in entrepreneurship, according to Jim Collins?","options":["To replace human labor and reduce costs","To accelerate the development of innovative products","To serve as a means to an end, helping entrepreneurs achieve their goals more quickly","To serve as a standalone goal for entrepreneurs to pursue"],"answer":"C"},{"id":206,"q":"What concept does the word \"technology\" originally relate to?","options":["The concept of invention and creation","The idea of controlling nature and making changes","The notion of competition and rivalry","The concept of cultural exchange and globalization"],"answer":"D"}];
 
-        function updateDashboardUI() {
-            document.getElementById('dash-name').innerText = currentUserData.name;
-            document.getElementById('dash-code').innerText = currentUserData.referralCode || "NONE";
-            document.getElementById('exam-cand-name').innerText = currentUserData.name;
-            document.getElementById('exam-cand-reg').innerText = `Reg No: ${currentUserData.referralCode || "TEST"}`;
+const PAGE_SIZE = 8;
+const EXAM_SIZE = 40;
+const EXAM_MINUTES = 30;
+
+let currentUser = null;
+let userData = null;
+let examQuestions = [];
+let answers = [];
+let currentPage = 0;
+let timerSeconds = EXAM_MINUTES * 60;
+let timerInterval = null;
+let examStartedAt = null;
+
+const $ = id => document.getElementById(id);
+const views = ["authView","dashboardView","examView","reviewView"];
+
+function showView(id){
+  views.forEach(v => $(v).classList.toggle("hidden", v !== id));
+  $("topbar").classList.toggle("hidden", id === "authView");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function toast(message){
+  const el = $("toast");
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>el.classList.remove("show"),3000);
+}
+
+function setMessage(id,msg=""){ $(id).textContent = msg; }
+
+function friendlyError(error){
+  const code = error?.code || "";
+  const map = {
+    "auth/invalid-credential":"Email or password is incorrect.",
+    "auth/invalid-email":"Please enter a valid email.",
+    "auth/email-already-in-use":"That email is already registered.",
+    "auth/weak-password":"Password must be at least 6 characters.",
+    "auth/network-request-failed":"Network error. Check your internet connection."
+  };
+  return map[code] || error?.message || "Something went wrong. Please try again.";
+}
+
+function randomCode(){
+  const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let out="";
+  for(let i=0;i<5;i++) out += chars[Math.floor(Math.random()*chars.length)];
+  return out;
+}
+
+async function uniqueReferralCode(){
+  for(let i=0;i<10;i++){
+    const code=randomCode();
+    const snap=await getDocs(query(collection(db,"users"),where("referralCode","==",code)));
+    if(snap.empty) return code;
+  }
+  throw new Error("Could not generate a unique referral code.");
+}
+
+$("loginTab").onclick=()=>{
+  $("loginTab").classList.add("active"); $("registerTab").classList.remove("active");
+  $("loginForm").classList.remove("hidden"); $("registerForm").classList.add("hidden");
+};
+$("registerTab").onclick=()=>{
+  $("registerTab").classList.add("active"); $("loginTab").classList.remove("active");
+  $("registerForm").classList.remove("hidden"); $("loginForm").classList.add("hidden");
+};
+
+$("loginForm").addEventListener("submit", async e=>{
+  e.preventDefault(); setMessage("loginMsg","");
+  const btn=e.submitter; btn.disabled=true; btn.textContent="Logging in…";
+  try{
+    await signInWithEmailAndPassword(auth,$("loginEmail").value.trim(),$("loginPassword").value);
+  }catch(err){ setMessage("loginMsg",friendlyError(err)); }
+  finally{btn.disabled=false;btn.textContent="Login to portal";}
+});
+
+let registrationInProgress = false;
+
+$("registerForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  setMessage("registerMsg","");
+  const btn=e.submitter;
+  btn.disabled=true;
+  btn.textContent="Creating account…";
+  registrationInProgress=true;
+
+  try{
+    const name=$("regName").value.trim();
+    const email=$("regEmail").value.trim();
+    const password=$("regPassword").value;
+    const enteredRef=$("refCode").value.trim().toUpperCase();
+
+    // 1. Create the Firebase Authentication account first.
+    const cred=await createUserWithEmailAndPassword(auth,email,password);
+    await updateProfile(cred.user,{displayName:name});
+
+    // 2. Generate this student's own referral code.
+    //    If code generation fails, the account itself should still be usable.
+    let referralCode = randomCode();
+    try{
+      referralCode = await uniqueReferralCode();
+    }catch(codeErr){
+      console.warn("Referral code generation fallback:",codeErr);
+    }
+
+    // 3. IMPORTANT: create the student's own users document before doing
+    //    anything with the optional referral. This prevents the dashboard
+    //    from depending on another user's document being writable.
+    await setDoc(doc(db,"users",cred.user.uid),{
+      name,
+      email,
+      referralCode,
+      referredBy:"",
+      totalreferral:0,
+      created:serverTimestamp()
+    });
+
+    // 4. The account is now complete. Let the auth listener/dashboard open.
+    registrationInProgress=false;
+    renderDashboard();
+    showView("dashboardView");
+    btn.disabled=false;
+    btn.textContent="Create student account";
+    setMessage("registerMsg","");
+
+    // 5. Referral handling is OPTIONAL and NEVER allowed to block account
+    //    creation/dashboard access. A valid code creates a separate referral
+    //    document instead of editing the referrer's users document.
+    if(enteredRef && enteredRef !== referralCode){
+      try{
+        const q=query(
+          collection(db,"users"),
+          where("referralCode","==",enteredRef)
+        );
+        const snap=await getDocs(q);
+
+        if(!snap.empty && snap.docs[0].id !== cred.user.uid){
+          const referrerId=snap.docs[0].id;
+          await setDoc(doc(collection(db,"referrals")),{
+            referrerId:referrerId,
+            referrerCode:enteredRef,
+            referredId:cred.user.uid,
+            referredEmail:email,
+            created:serverTimestamp()
+          });
+
+          // Keep the local dashboard data consistent. Referral count itself
+          // is always calculated from the referrals collection.
+          await loadReferralCount();
         }
+      }catch(refErr){
+        console.warn("Referral processing skipped:",refErr);
+      }
+    }
+  }catch(err){
+    registrationInProgress=false;
+    setMessage("registerMsg",friendlyError(err));
+  }finally{
+    btn.disabled=false;
+    btn.textContent="Create student account";
+  }
+});
 
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            showLoader("Authenticating...");
-            try {
-                await signInWithEmailAndPassword(auth, document.getElementById('login-email').value, document.getElementById('login-password').value);
-            } catch (error) { alert("Login failed: " + error.message); hideLoader(); }
-        });
+$("logoutBtn").onclick=()=>signOut(auth);
 
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            showLoader("Creating Record...");
-            try {
-                const email = document.getElementById('reg-email').value;
-                const password = document.getElementById('reg-password').value;
-                const name = document.getElementById('reg-name').value;
-                const refCode = document.getElementById('reg-ref').value.toUpperCase();
-                
-                const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                await updateProfile(userCred.user, { displayName: name });
-                const myCode = Math.random().toString(36).substring(2, 7).toUpperCase();
+onAuthStateChanged(auth, async user=>{
+  if(!user){
+    currentUser=null;
+    userData=null;
+    stopTimer();
+    showView("authView");
+    return;
+  }
 
-                // Instantly load dashboard without waiting for Firebase rules checking
-                currentUserData = { name, email, referralCode: myCode };
-                updateDashboardUI();
-                showView('dashboard');
-                hideLoader();
+  currentUser=user;
 
-                // Background save
-                await setDoc(doc(db, "users", userCred.user.uid), {
-                    name, email, referralCode: myCode, referredBy: refCode || null, created: serverTimestamp()
-                });
-                
-            } catch (error) { 
-                hideLoader();
-                alert("Registration Error: " + error.message); 
-            }
-        });
+  // During registration, the registration handler controls when the
+  // dashboard opens. This avoids a race between Auth and Firestore.
+  if(registrationInProgress) return;
 
-        window.logout = () => signOut(auth);
+  try{
+    let snap=null;
+    for(let attempt=0;attempt<3;attempt++){
+      snap=await getDoc(doc(db,"users",user.uid));
+      if(snap.exists()) break;
+      await new Promise(resolve=>setTimeout(resolve,300));
+    }
 
-        // FULL 206 QUESTION BANK 
-        const ALL_QUESTIONS = [{"id":1,"q":"Which of the following is NOT a characteristic of organization?","options":["Management provides guidance and direction.","A set of rules and instruments are communicated to all involved.","Personnel positions, rights, and responsibilities are defined and classified.","Organization involves the allocation of resources without any planning."],"answer":"C"},{"id":2,"q":"From the following options, what represents the nature of organization?","options":["Subdivision of tasks based on seniority.","Allocation of resources without any consideration of suitability.","Determination of positions at random levels.","Selection of suitable personnel and allocation of jobs according to suitability."],"answer":"D"},{"id":3,"q":"What is one of the importance of an effective organization?","options":["Makes management complicated and inefficient.","Discourages specialization among employees.","Decreases productivity and hampers progress.","Encourages specialization, improves techniques, encourages constructive thinking, increases productivity, and accelerates progress."],"answer":"D"},{"id":4,"q":"Which of the following statements is true about organization?","options":["Organization is a process that has no connection with management.","Organization is a tool used by employees to accomplish personal goals.","Organization involves assigning tasks to individuals without considering their abilities.","Organization is a foundation upon which the whole structure of management can be built."],"answer":"D"},{"id":5,"q":"What is a key characteristic of an effective organization?","options":["Ignoring the principles of equality in job division.","Assigning tasks based on personal preferences.","Defining personnel positions, rights, and responsibilities clearly.","Allotting rights and authority based on friendship rather than suitability."],"answer":"C"},{"id":6,"q":"Which of the following processes represents the nature of organization?","options":["Distributing tasks randomly without any plan.","Establishing positions without any consideration of authority.","Selecting personnel based on their personal preferences.","Subdividing main work into small groups, allocating jobs, allotting authority, and determining positions at different levels."],"answer":"D"},{"id":7,"q":"What does an effective organization rely on to achieve tasks set forth before it?","options":["An elaborate set of random rules.","Complex decision-making processes.","A foundation upon which management is built.","Strict control over individual creativity and innovation."],"answer":"C"},{"id":8,"q":"What does the term \"organization\" refer to?","options":["A chaotic process lacking any structure.","A rigid system of command and control.","A dynamic process integrating activities to achieve objectives.","A one-time event unrelated to management."],"answer":"C"},{"id":9,"q":"Which of the following is NOT a characteristic of organization?","options":["Clear definition of personnel positions, rights, and responsibilities.","Allocation of tasks randomly without any planning.","Communication of rules and instructions to all stakeholders.","Direction provided by management."],"answer":"C"},{"id":10,"q":"What best describes the nature of organization, as mentioned?","options":["Division of work based on individual preferences.","Allocation of jobs without considering suitability.","Establishment of positions without any criteria","Subdivision of main work, selection of suitable personnel, allocation of jobs, allotment of authority, and determination of positions at different levels."],"answer":"D"},{"id":11,"q":"Why is organization important in a business context?","options":["It hinders productivity and complicates management.","It stifles creativity and restricts employee roles.","It simplifies management, encourages specialization, and increases productivity.","It replaces the need for management decisions."],"answer":"C"},{"id":12,"q":"What role does organization play in management?","options":["It is an unnecessary overhead, adding complexity.","It enforces strict control over individual initiatives.","It is the primary foundation on which effective management is built.","It discourages specialization and teamwork."],"answer":"C"},{"id":13,"q":"What is a central aspect of an effective organization?","options":["Ignoring communication and rules.","Treating all employees equally.","Clear definition of personnel roles and responsibilities.","Relying solely on top-down authority."],"answer":"C"},{"id":14,"q":"What process characterizes the nature of organization?","options":["Assigning tasks randomly without any structure.","Establishing positions based on personal preferences.","Selecting employees without considering suitability.","Subdividing main work, selecting suitable personnel, allocating tasks, allotting authority, and determining positions at various levels."],"answer":"D"},{"id":15,"q":"Why is organization considered a necessary foundation?","options":["It complicates management processes.","It serves as a substitute for managerial decisions.","It simplifies management, encourages innovation, and enhances productivity.","It stifles employee creativity and individuality."],"answer":"C"},{"id":16,"q":"In the context of management, what is the key outcome of an effective organization?","options":["Increased complexity and bureaucracy.","Reduced employee involvement.","Simplified processes and improved productivity.","Isolation of managers from employees."],"answer":"C"},{"id":17,"q":"What does the term \"entrepreneur\" typically refer to?","options":["A person who only buys products.","A business owner.","An individual who starts their own business.","An employee working in a large corporation."],"answer":"C"},{"id":18,"q":"Which thinker introduced the dimension of risk-taking as a characteristic of entrepreneurship?","options":["Alfred Marshall.","Max Weber.","Richard Cantillon.","Frank Knight."],"answer":"D"},{"id":19,"q":"According to Frank Knight`s Risk Bearing Theory, how does the entrepreneur earn profit?","options":["By exploiting their employees.","By investing heavily in marketing.","By effectively managing production processes.","By taking risks and anticipating future events."],"answer":"D"},{"id":20,"q":"According to Alfred Marshall, which of the following factors is considered the driving force that brings together land, labor, capital, and organization?","options":["Capital.","Labor.","Land","Entrepreneurship."],"answer":"D"},{"id":21,"q":"What is a central characteristic of Max Weber’s Sociological Theory of entrepreneurship?","options":["The entrepreneur`s ability to innovate.","The entrepreneur`s risk-taking ability.","The entrepreneur`s role expectations based on society`s norms and values.","The entrepreneur`s ability to form successful partnerships."],"answer":"C"},{"id":22,"q":"What does Mark Casson`s Economic Theory suggest is the demand for entrepreneurship arising from?","options":["Technological advancement.","Government policies.","Change and economic conditions.","Cultural shifts."],"answer":"C"},{"id":23,"q":"Which major characteristic does Joseph Schumpeter’s Innovation Theory attribute to entrepreneurs?","options":["Risk-taking ability.","Organizational skills.","Creativity, foresight, and innovation.","Leadership skills."],"answer":"C"},{"id":24,"q":"According to Israel Kirzner, what is a more characteristic aspect of entrepreneurship compared to innovation?","options":["Creativity.","Risk-taking.","Alertness to recognize opportunity.","Resource management."],"answer":"C"},{"id":25,"q":"Which theory emphasizes the entrepreneurial motive derived from the need for achievement and power?","options":["Frank Knight`s Risk Bearing Theory.","Mark Casson`s Economic Theory.","Max Weberâ€TMs Sociological Theory.","McClellandâ€TMs Theory of Achievement Motivation."],"answer":"D"},{"id":26,"q":"What does Peter Drucker`s Theory of Entrepreneurship emphasize as the keys to entrepreneurship?","options":["Financial resources and market knowledge.","Innovation, resources, and an entrepreneurial behavior.","Specialization and technical skills.","Networking and affiliations."],"answer":"B"},{"id":27,"q":"What consensus do economists share about entrepreneurship despite differences in theories?","options":["Entrepreneurs are primarily motivated by external incentives.","Entrepreneurs are best defined as people who imitate others`innovations.","Entrepreneurship is a distinct concept and a central factor of economic activity.","Entrepreneurship is solely determined by cultural factors."],"answer":"C"},{"id":28,"q":"Which of the following characteristics is NOT associated with entrepreneurship?","options":["Foresight on demand and supply changes.","Technical knowledge.","Good leadership skills.","Willingness to take risks."],"answer":"C"},{"id":29,"q":"What was Richard Cantillon`s contribution to the definition of entrepreneurship?","options":["He introduced the concept of risk-taking.","He classified economic agents into landowners, hirelings, and entrepreneurs.","He emphasized the role of innovation in entrepreneurship.","He identified entrepreneurship as a process of integrating and coordinating activities to achieve goals."],"answer":"D"},{"id":30,"q":"According to Jean Baptise Say, how does the entrepreneur contribute to the economy?","options":["By maximizing profits through exploitation.","By performing various roles in the business.","By bringing people together to build productive items.","By creating new technologies and products."],"answer":"C"},{"id":31,"q":"What does Max Weber emphasize as the driving force of entrepreneurship in his sociological theory?","options":["Economic factors.","Government regulations.","Religious beliefs, taboos, and customs.","Technological advancements."],"answer":"C"},{"id":32,"q":"According to Leibenstein`s Theory of Entrepreneurship, what is a primary trait of entrepreneurs?","options":["Innovation and creativity.","Recognition of market trends and profitable activities.","Ability to manage employees effectively.","Extensive knowledge of the industry."],"answer":"B"},{"id":33,"q":"Which economic factor discourages entrepreneurship according to Mark Casson`s Economic Theory?","options":["Taxation policy.","Easy access to finance on favorable terms.","Availability of raw materials.","Lack of technology and infrastructure."],"answer":"D"},{"id":34,"q":"What does McClelland`s Theory of Achievement Motivation suggest about entrepreneurs?","options":["They are primarily motivated by external incentives.","They are motivated by the need for affiliation.","They focus on internal motivation and need for achievement.","They are mainly driven by the need for power."],"answer":"C"},{"id":35,"q":"According to Israel Kirzner`s Theory of Entrepreneurship, what is the transformation of spontaneous learning to conscious knowledge motivated by?","options":["Social recognition and fame.","The desire for creative expression.","Monetary gain.","The need for power."],"answer":"C"},{"id":36,"q":"What is a central characteristic of Peter Drucker`s Theory of Entrepreneurship?","options":["Emphasis on imitation and adaptation.","Combination of existing resources in a new productive way.","Resource management and financial planning.","Increase in value or satisfaction to the customer from the resource."],"answer":"D"},{"id":37,"q":"What is the main focus of Alfred Marshall`s Theory of Entrepreneurship?","options":["Innovation and creativity.","Organizational structure and management.","Land, labor, capital, and organization as the driving factors.","Social and cultural factors influencing entrepreneurship."],"answer":"C"},{"id":38,"q":"In Mark Casson`s Economic Theory, what condition encourages entrepreneurship?","options":["Limited availability of raw materials.","Stringent taxation policies.","Industrial policies that promote competition.","Conducive economic conditions."],"answer":"D"},{"id":39,"q":"According to Max Weber`s Sociological Theory, what is the role of religion in driving entrepreneurship?","options":["It has no influence on entrepreneurial behavior.","It shapes role expectations and societal norms.","It emphasizes risk-taking and innovation.","It promotes materialistic desires."],"answer":"B"},{"id":40,"q":"How does Israel Kirzner define entrepreneurship in his theory?","options":["As a creative endeavor driven by innovation.","As a process of combining resources to create value.","As the transformation of spontaneous learning into conscious knowledge motivated by the prospects of gain.","As a competitive struggle for market dominance."],"answer":"C"},{"id":41,"q":"What is a key aspect of Leibenstein`s Theory of Entrepreneurship?","options":["Entrepreneurship is driven solely by profit-seeking motives.","Entrepreneurs are primarily risk-takers.","Entrepreneurs are gap-fillers who recognize market trends and develop new goods or processes.","Entrepreneurship is a result of conducive economic conditions."],"answer":"C"},{"id":42,"q":"What aspect of entrepreneurship does Peter Drucker`s Theory emphasize?","options":["Government regulations and policies.","Innovation, resources, and an entrepreneurial behavior.","Imitation and adaptation to market trends.","Focus on formal education and training."],"answer":"B"},{"id":43,"q":"Which theory considers uncertainty as a factor of production and views the entrepreneur as acting in anticipation of future events?","options":["Leibenstein`s Theory of Entrepreneurship.","Max Weber`s Sociological Theory.","Frank Knight`s Risk Bearing Theory.","Israel Kirznerâ€TMs Theory of Entrepreneurship."],"answer":"C"},{"id":44,"q":"What characteristic is emphasized by McClelland`s Theory of Achievement Motivation?","options":["The need for affiliation.","The ability to imitate and adapt to market trends.","The need for power and control.","The need for achievement and the drive to accomplish significant tasks."],"answer":"D"},{"id":45,"q":"What does the term \"entrepreneurial culture\" refer to?","options":["The set of laws and regulations that govern entrepreneurship.","The genetic predisposition for entrepreneurship.","The social and cultural values that support and encourage entrepreneurship.","The innate abilities and skills of an entrepreneur."],"answer":"C"},{"id":46,"q":"Which of the following is the main factor that influences the growth of entrepreneurship?","options":["Genetic traits of individuals.","Economic conditions and technology.","Government policies and regulations.","Social values, culture, and environmental factors."],"answer":"D"},{"id":47,"q":"Why is understanding the cultural environment important for entrepreneurs?","options":["To manipulate government policies in their favor.","To avoid risks and uncertainties in business.","To predict future economic conditions.","To better understand behavior and conduct of people and predict their actions in relation to entrepreneurship."],"answer":"D"},{"id":48,"q":"According to Max Weber, what role does social culture play in the emergence of entrepreneurship?","options":["Social culture has no influence on entrepreneurship.","It determines the amount of risk an entrepreneur is willing to take.","It creates a supportive environment for entrepreneurship.","It encourages entrepreneurs to focus on short-term goals."],"answer":"C"},{"id":49,"q":"Which of the following aspects of culture can influence an entrepreneur`s behavior?","options":["Government regulations and policies.","Economic trends and technology advancements.","Environmental pressures and religious beliefs.","All of the options."],"answer":"D"},{"id":50,"q":"What role does family background play in shaping entrepreneurial instincts?","options":["It has no impact on an individual`s entrepreneurial tendencies.","It determines an individual`s genetic predisposition for entrepreneurship.","Growing up in a business environment increases the probability of becoming an entrepreneur.","Family background has no influence on an individual`s career choices."],"answer":"C"},{"id":51,"q":"Why do family enterprises often play a major role in regional and local economics?","options":["Family enterprises receive more government support.","Family businesses tend to be larger in scale.","Family enterprises have a positive attitude towards growth and are cost-efficient.","Family enterprises are exempt from taxes and regulations."],"answer":"C"},{"id":52,"q":"What is the key takeaway about the influence of culture on entrepreneurship?","options":["Culture has no impact on entrepreneurship.","Genetic traits are the sole determinant of entrepreneurial success.","Culture provides a framework within which individuals can pursue entrepreneurial opportunities.","Entrepreneurship is purely driven by technological advancements."],"answer":"C"},{"id":53,"q":"Which of the following factors are considered part of the cultural values that influence entrepreneurship?","options":["Government regulations and taxation.","Economic conditions and technological advancements.","Social values, religious beliefs, and customs.","Access to raw materials and financial support."],"answer":"C"},{"id":54,"q":"What does entrepreneurial culture imply?","options":["A set of economic factors that determine success in business.","A collection of laws and regulations that support entrepreneurship.","A combination of personal traits and skills that make a successful entrepreneur.","A set of values, norms, and traits that are conducive to the growth of entrepreneurship."],"answer":"D"},{"id":55,"q":"What role does family play in shaping entrepreneurial instincts?","options":["Family has no impact on an individual`s entrepreneurial tendencies.","Entrepreneurial instincts are solely determined by genetics.","Growing up in a business-oriented family environment can influence an individual`s propensity towards entrepreneurship.","Family background has no connection to an individual`s career choices."],"answer":"C"},{"id":56,"q":"According to Max Weber`s sociological theory, how does religion influence entrepreneurship?","options":["Religion has no impact on entrepreneurship.","Religion fosters a spirit of laziness and complacency.","Religious beliefs create an environment that encourages entrepreneurial behavior.","Religion limits an entrepreneur`s ability to take risks."],"answer":"C"},{"id":57,"q":"What do sociologists like Max Weber argue about entrepreneurship and cultural values?","options":["Cultural values have no influence on entrepreneurship.","Entrepreneurship is determined solely by government policies.","Cultural values, social sanctions, and role expectations contribute to the emergence of entrepreneurship.","Entrepreneurship is a universal phenomenon unaffected by culture."],"answer":"C"},{"id":58,"q":"Why is understanding cultural values important for entrepreneurs?","options":["Cultural values are irrelevant to the business environment.","It helps entrepreneurs manipulate the stock market.","It enables entrepreneurs to better predict consumer behavior and market trends.","Cultural values have no impact on business decisions."],"answer":"C"},{"id":59,"q":"What distinguishes successful family businesses from unsuccessful ones?","options":["Family businesses have no impact on regional economies.","Family businesses are more likely to fail than non-family businesses.","Successful family businesses are committed to growth, continuity, and close interaction between family and business.","Family businesses are less cost-efficient than other firms."],"answer":"C"},{"id":60,"q":"Why does the entrepreneurial ability to \"read\" opportunities depend on culture?","options":["Entrepreneurs can predict opportunities based on their personal experiences.","Culture provides entrepreneurs with innate abilities to foresee trends.","Culture gives entrepreneurs a higher sensitivity to what others are looking for, enabling them to identify opportunities.","Entrepreneurial opportunities are determined solely by economic conditions."],"answer":"C"},{"id":61,"q":"What does the entrepreneurial ability to \"read\" opportunities mean?","options":["Entrepreneurs can predict the stock market with accuracy.","Entrepreneurs can foresee technological advancements.","Entrepreneurs have a knack for predicting consumer behavior.","Entrepreneurs are sensitive to market demands and can identify overlooked opportunities."],"answer":"D"},{"id":62,"q":"What are some common barriers that limit enterprise across most nations?","options":["Regulatory barriers only.","Cultural and social barriers only.","Financial and economic barriers only.","Regulatory, cultural and social, and financial and economic barriers."],"answer":"D"},{"id":63,"q":"Which of the following is an example of a regulatory barrier to entrepreneurial activity?","options":["Lack of access to social and business networks.","Limited knowledge of the available institutions.","Fear of failure.","Complex and different procedures for creating various legal forms of enterprises."],"answer":"D"},{"id":64,"q":"How can employment regulation impact entrepreneurial activity?","options":["It encourages larger firm sizes and more investment in technology.","It enhances management flexibility.","It discourages smaller firm sizes, research and development, and investment in technology.","It has no impact on entrepreneurial activity."],"answer":"C"},{"id":65,"q":"What is one way to address the cultural barrier of fear of failure?","options":["Introducing complex legal procedures.","Promoting entrepreneurial culture and role models to reduce the stigma of failure.","Increasing the legal consequences of failure.","Providing access to financial networks."],"answer":"B"},{"id":66,"q":"Why do newer and smaller growth firms often face barriers in raising risk capital?","options":["They have access to efficient capital markets.","They lack motivation to grow.","Their business objectives are not well-defined.","They depend on external sources of finance and face market barriers that prevent them from raising sufficient risk capital."],"answer":"D"},{"id":67,"q":"How do regulatory and administrative burdens impact entrepreneurial activity?","options":["They have no impact on entrepreneurial activity.","They enhance entrepreneurial motivation.","They impose adverse effects on entrepreneurial activity.","They lead to improved access to risk capital."],"answer":"C"},{"id":68,"q":"How can cultural and social barriers impact the creation of enterprises?","options":["They eliminate the need for business networks.","They enhance language skills among entrepreneurs.","They encourage entrepreneurs to take on excessive risk.","They limit the integration of entrepreneurs, hinder access to networks, and lack of information about supporting institutions."],"answer":"D"},{"id":69,"q":"What is the role of promoting an entrepreneurial culture in overcoming barriers to entrepreneurship development?","options":["It increases language barriers.","It reduces the need for risk-taking among entrepreneurs.","It improves motivation, risk-taking appetite, skills, and knowledge needed for enterprise creation.","It increases the fear of failure among entrepreneurs."],"answer":"C"},{"id":70,"q":"Which of the following is NOT a potential financial and economic barrier to entrepreneurial practice?","options":["Limited access to risk capital.","Lack of access to financial networks.","Efficient capital markets for larger firms.","Dependence on external sources of finance for growth."],"answer":"D"},{"id":71,"q":"How do regulatory and administrative burdens impact entrepreneurial activity?","options":["They have no impact on entrepreneurial activity.","They enhance entrepreneurial motivation.","They impose adverse effects on entrepreneurial activity.","They lead to improved access to risk capital."],"answer":"C"},{"id":72,"q":"Which type of barrier includes limited access to risk capital, both for seed/early stage and longer-term financing?","options":["Cultural and social barriers.","Economic and financial barriers.","Regulatory barriers.","Language barriers."],"answer":"B"},{"id":73,"q":"Which of the following is a potential cultural barrier to entrepreneurial practice?","options":["Access to financial networks.","Lack of business networks.","Promoting entrepreneurial culture and role models.","Fear of failure."],"answer":"D"},{"id":74,"q":"Why might exit barriers discourage entry into entrepreneurship?","options":["Because exit and entry rates are unrelate","Because entry does not involve risk.","Because exit and entry rates are closely related.","Because exit barriers encourage risk-taking."],"answer":"C"},{"id":75,"q":"What is the primary focus of regulatory barriers?","options":["Impact on personal skills and knowledge.","Encouraging innovation and creativity.","Ensuring efficient capital markets.","Providing a conducive business environment."],"answer":"D"},{"id":76,"q":"How does religion influence entrepreneurship according to Max Weber`s perspective?","options":["Religion has no impact on entrepreneurship.","Religion discourages entrepreneurship.","Religion drives entrepreneurship through economic freedom and private enterprise.","Religion is unrelated to the entrepreneurial process."],"answer":"C"},{"id":77,"q":"What role do networks play in overcoming barriers to entrepreneurial practice?","options":["Networks have no impact on overcoming barriers.","Networks create cultural and social barriers.","Networks provide access to financial capital.","Networks can provide information, communication, and resources, which are important tools for overcoming barriers."],"answer":"D"},{"id":78,"q":"Which of the following factors is NOT a barrier faced by startups and smaller growth firms?","options":["Access to external sources of finance.","Market barriers preventing the raising of risk capital.","Efficient capital markets.","Dependence on risk-taking entrepreneurs for growth."],"answer":"D"},{"id":79,"q":"Why is creating an entrepreneurial culture important for overcoming barriers?","options":["It eliminates the need for access to networks.","It reduces the complexity of legal procedures.","It increases the risk of failure for entrepreneurs.","It improves motivation, skills, knowledge, and risk-taking appetite, factors that can inhibit the creation of enterprises."],"answer":"D"},{"id":80,"q":"Which of the options is one of the primary benefits of entrepreneurs creating new businesses?","options":["Decreasing competition among existing businesses.","Centralizing economic power within large corporations.","Generating jobs for themselves and their employees.","Reducing productivity through operational changes."],"answer":"C"},{"id":81,"q":"What is a key role of entrepreneurs in the economy and society?","options":["Generating income solely for themselves.","Focusing on large-scale production.","Providing security to others in the society.","Broadening the base of participation in society and creating jobs."],"answer":"D"},{"id":82,"q":"How does entrepreneurship contribute to economic growth?","options":["By restricting innovation to large corporations.","By focusing solely on generating income.","By increasing competition among businesses.","By introducing innovations and opening new markets."],"answer":"D"},{"id":83,"q":"Which term describes the central ingredient in economic growth driven by entrepreneurs?","options":["Expansion.","Stability.","Innovation.","Standardization."],"answer":"C"},{"id":84,"q":"What is the significance of entrepreneurs in the commercial introduction of new products and services?","options":["They tend to copy existing products and services.","They rarely have an impact on new markets.","They play a minor role in changing consumer behavior.","They are responsible for the commercial introduction of many new products and services."],"answer":"D"},{"id":85,"q":"How do innovations provided by entrepreneurs improve the quality of life for consumers?","options":["By limiting consumer choices.","By making life more complicate","By offering only essential goods and services.","By enriching people`s lives in numerous ways, such as improving communication and providing new forms of entertainment."],"answer":"D"},{"id":86,"q":"What does the Global Entrepreneurship Monitor (GEM) project emphasize about entrepreneurial behavior?","options":["It has no impact on innovation and growth.","It is unrelated to unexploited opportunities.","It hinders the development of the economy.","It is a crucial engine of innovation and growth, implying attention and willingness to take advantage of unexploited opportunities."],"answer":"D"},{"id":87,"q":"What role can entrepreneurs play in the developing world?","options":["They primarily contribute to large corporations.","They play a minimal role in job creation.","They are not relevant to poverty reduction.","They are primary engines of job creation and poverty reduction."],"answer":"D"},{"id":88,"q":"Why might governments wish to encourage entrepreneurship through policies?","options":["To limit innovation and growth in the economy.","To centralize economic power within large corporations.","To decrease job opportunities for individuals.","To promote economic growth, job creation, and poverty reduction."],"answer":"D"},{"id":89,"q":"What is a key characteristic of entrepreneurship that contributes to economic growth?","options":["Resistance to change.","Adaptation to the status quo.","Aversion to innovation.","Embrace of change and willingness to exploit it as an opportunity."],"answer":"D"},{"id":90,"q":"How do entrepreneurs contribute to expanding consumer choices?","options":["By limiting the availability of products and services.","By focusing on standardized offerings.","By providing goods and services for needs consumers didn`t realize they had.","By encouraging consumers to choose only essential products."],"answer":"C"},{"id":91,"q":"What is the role of small businesses in the economy?","options":["They tend to centralize economic power.","They have minimal impact on job creation.","They are engines of job creation and decentralize economic power.","They primarily offer standardized products and services."],"answer":"C"},{"id":92,"q":"What impact can successful small businesses have on the developing world?","options":["They may not contribute significantly to job creation.","They tend to hinder economic growth.","They are key drivers of job creation and poverty reduction.","They primarily focus on generating income for themselves."],"answer":"C"},{"id":93,"q":"What is the significance of the Global Entrepreneurship Monitor (GEM) project?","options":["It focuses on discouraging entrepreneurial behavior.","It is a study limited to one country.","It highlights the negative impact of entrepreneurs on growth.","It emphasizes that entrepreneurial behavior is a crucial engine of innovation and growth."],"answer":"D"},{"id":94,"q":"How do entrepreneurs contribute to technological advancements?","options":["They tend to slow down technological progress.","They have no influence on technological changes.","They often introduce innovations that revolutionize how people live and work.","They mainly focus on imitation rather than innovation."],"answer":"C"},{"id":95,"q":"What are entrepreneurs responsible for in terms of new products and services?","options":["They have no role in introducing new products.","They copy existing products without innovation.","They commercialize and introduce many new products and services.","They primarily focus on disrupting existing markets."],"answer":"C"},{"id":96,"q":"What term refers to the factors that affect a business from outside its walls?","options":["Internal factors.","Competitive factors.","External factors or influences.","Business dynamics."],"answer":"C"},{"id":97,"q":"Which factor often affects a business the most by determining how other businesses compete with its products?","options":["Legal factors.","Social factors.","Economic factors.","Degree of competition."],"answer":"D"},{"id":98,"q":"How might changes in government policy impact a business?","options":["They have no impact on business operations.","They lead to increased competition.","They can affect business operations through political factors.","They influence technological advancements."],"answer":"C"},{"id":99,"q":"Which factor refers to the rapid pace of change in production processes and product innovation?","options":["Economic factors.","Political factors.","Technological factors.","Ethical factors."],"answer":"C"},{"id":100,"q":"Why could markets change rapidly?","options":["Due to constant demand","Due to rigid competition.","Due to government subsidies.","Due to new needs and wants, new competitors, technological advancements, or global events."],"answer":"D"},{"id":101,"q":"How might a business react to increased competition?","options":["Increase costs to improve quality.","Cut costs by reducing product quality.","Spend more on promotion and advertising.","All of the options."],"answer":"D"},{"id":102,"q":"What do businesses need to consider in terms of social responsibility?","options":["Government regulations.","Customer feedback.","The impact of their actions on different parts of society they interact with.","Financial profits only."],"answer":"C"},{"id":103,"q":"What are the extra benefits and costs that a business action can lead to called?","options":["Private benefits and costs.","Externalities - external costs and benefits.","Social benefits and social costs.","Economic incentives and penalties."],"answer":"B"},{"id":104,"q":"What is the term for the main factor that affects how fiercely other businesses compete with the products a business makes?","options":["Economic factors.","Competitive factors.","Political factors.","Technological factors."],"answer":"B"},{"id":105,"q":"How might a business respond to the entrance of new competitors in a market?","options":["Reduce prices to attract more customers.","Improve product quality to stand out.","Increase advertising and brand loyalty efforts.","All of the options."],"answer":"D"},{"id":106,"q":"What do economists and experts agree about the role of entrepreneurship in an economy?","options":["It has no impact on economic vitality.","It is only relevant in developed economies.","It is essential for the vitality of any economy, whether developed or developing.","It is primarily important for large corporations."],"answer":"C"},{"id":107,"q":"Which type of market tends to have close rivalry among many small rival businesses?","options":["A market with few large rival firms.","A market with rapidly changing technology.","A market with a few competitors.","A market with many small rival businesses."],"answer":"D"},{"id":108,"q":"What is the term for the extra benefits and costs of a business action that go beyond direct benefits to the business and its customers?","options":["Externalities - external costs and benefits.","Social benefits and social costs.","Private benefits and costs.","Ethical benefits and costs."],"answer":"B"},{"id":109,"q":"What is the main reason markets change rapidly?","options":["Government policies.","New technologies.","Stagnation in the economy.","Changes in customer needs, new competitors, technological advancements, or global events."],"answer":"D"},{"id":110,"q":"What role does innovation play in entrepreneurship and economic growth?","options":["It has no impact on growth.","It is important for small businesses only.","Innovation is central to economic growth and is a core aspect of entrepreneurship.","Innovation is primarily important for large corporations."],"answer":"C"},{"id":111,"q":"What factor involves how consumers, households, and communities behave and their beliefs?","options":["Legal factors.","Economic factors.","Political factors.","Social factors."],"answer":"D"},{"id":112,"q":"How might a business respond to an increase in competition, such as the launch of a rival product?","options":["Increase prices to maximize profits.","Lower product quality to reduce costs.","Spend less on promotion and advertising.","Cut costs, improve quality, and increase promotion efforts."],"answer":"D"},{"id":113,"q":"What is one of the first factors to consider when assessing the potential of a business opportunity?","options":["The profitability of the opportunity.","The level of competition in the market.","The stability of the company associated with the opportunity.","The size of the niche market."],"answer":"C"},{"id":114,"q":"What makes business opportunities that target niche markets appealing?","options":["They have the potential for high profits.","They involve well-established companies.","They offer products with a broad appeal.","They address needs often overlooked by others."],"answer":"D"},{"id":115,"q":"What is a key factor in evaluating business opportunities?","options":["The level of competition in the market.","The financial base of the company.","The location of the company.","The comprehensive system for getting products to consumers, including production, sales, marketing, and delivery."],"answer":"D"},{"id":116,"q":"Why is the ability to satisfy orders quickly and efficiently important for a business opportunity?","options":["It allows the company to focus on niche markets.","It ensures the product`s broad appeal.","It helps the company build a loyal client base.","It reduces the need for sales and marketing strategies."],"answer":"C"},{"id":117,"q":"When considering different business opportunities, what is an important aspect to assess in terms of the return you will receive?","options":["The company`s financial stability.","The popularity of the product.","The size of the niche market.","Whether you will earn an equitable return in comparison to what you invest in terms of time and resources."],"answer":"D"},{"id":118,"q":"Why is it worth considering home-based business opportunities in today`s market?","options":["They require less investment of time and resources.","They have a proven track record of success.","They offer traditional business settings.","They often start with fresh business ideas and approaches."],"answer":"D"},{"id":119,"q":"What should be your approach if you see merit in a given business idea and believe it has a good chance of succeeding?","options":["Discard the idea and seek alternatives.","Wait for the competition to implement the ide","Look it over carefully and consider it as an investment opportunity.","Focus solely on traditional business settings."],"answer":"C"},{"id":120,"q":"What is the term used to describe the external factors that influence a business and can affect its operations and objectives?","options":["Internal influences","Operational conditions","Competitive factors","External factors or influences"],"answer":"D"},{"id":121,"q":"Which of the following is an example of a political factor that can influence a business?","options":["Changes in customers`preferences","Fluctuations in exchange rates","Advances in technology","Government policy changes"],"answer":"D"},{"id":122,"q":"Why is it important for a business to assess the stability of a company associated with a new business opportunity?","options":["To ensure the company is a well-established competitor.","To identify potential market threats.","To guarantee an equitable return on investment.","To have some assurance that the company will be around long enough to benefit from the opportunity and recoup investments."],"answer":"D"},{"id":123,"q":"What type of market is likely to have less fierce competition and allow a company to establish itself as the industry standard?","options":["A market with a few large rival firms.","A rapidly changing market.","A market with many small rival businesses.","A niche market"],"answer":"D"},{"id":124,"q":"What are externalities in the context of business opportunities?","options":["Business practices that directly affect customers.","Factors that primarily affect the internal operations of a business.","Extra costs and benefits that are above and beyond the direct costs and benefits of the business, often imposed on society.","Profits generated by a business opportunity."],"answer":"C"},{"id":125,"q":"What is one of the key factors to consider when assessing the potential of a home-based business opportunity?","options":["The size of the investment requires","The number of competitors in the market.","The number of products offered by the business.","The freshness and novelty of the business idea."],"answer":"D"},{"id":126,"q":"What is the main goal when assessing a business opportunity`s potential return in comparison to the investment?","options":["To earn a return regardless of the investment.","To ensure the highest possible return on investment.","To achieve a return that is equitable and justifiable in relation to the time and resources invested.","To maximize the investment with minimal effort."],"answer":"C"},{"id":127,"q":"What is intellectual property in the context of entrepreneurship?","options":["Tangible assets owned by an entrepreneur.","Valuable financial investments.","Creative works protected by copyrights.","Certain intellectual creations with commercial value and legal property rights."],"answer":"D"},{"id":128,"q":"What is the purpose of intellectual property law in relation to innovation?","options":["To encourage competition among creators.","To prevent the copying of ideas by competitors.","To limit the time period for profiting from new ideas.","To regulate the pricing of intellectual property."],"answer":"D"},{"id":129,"q":"What is the main reason for an entrepreneur to protect intellectual property?","options":["To eliminate competition from the market.","To recover development costs for new ideas.","To prevent others from using similar trademarks.","To discourage innovation and creativity."],"answer":"D"},{"id":130,"q":"Which form of intellectual property grants an inventor the exclusive right to make, use, and sell an invention for a fixed period?","options":["Copyright","Trade secret","Patent","Trademark"],"answer":"C"},{"id":131,"q":"What is the purpose of a copyright?","options":["To protect the idea behind a creative work.","To prevent competitors from selling similar products.","To protect the form in which an original work appears.","To restrict access to copyrighted materials."],"answer":"C"},{"id":132,"q":"Which form of intellectual property consists of knowledge kept secret for a business advantage?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"C"},{"id":133,"q":"What is the main requirement for a trade secret to be valid?","options":["It must be registered with intellectual property authorities.","It must be disclosed to competitors for protection.","It must be protected through contracts and non-disclosure agreements.","It must be widely known and available to the public"],"answer":"C"},{"id":134,"q":"What is the primary function of a trademark?","options":["To indicate the source of goods and distinguish them from others.","To protect creative works of authors and composers.","To grant the exclusive right to reproduce a product.","To prevent competitors from using any similar words."],"answer":"A"},{"id":135,"q":"What is a significant characteristic of trademarks compared to copyrights or patents?","options":["Trademarks provide protection for a fixed period of time.","Trademarks can be enforced without registration.","Trademarks cannot be renewed after expiration.","Trademarks can be renewed endlessly."],"answer":"D"},{"id":136,"q":"Which intellectual property form is exemplified by the use of the symbol (®) to indicate registration?","options":["Copyright","Trade secret","Patent","Trademark"],"answer":"D"},{"id":137,"q":"What type of intellectual property protects a symbol, word, or design used to indicate the source of goods?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"D"},{"id":138,"q":"What is the duration of patent protection in most countries?","options":["Up to 5 years","Up to 10 years i","Up to 15 years","Up to 20 years"],"answer":"D"},{"id":139,"q":"What is the primary goal of protecting intellectual property rights?","options":["To stifle competition among businesses","To encourage copying of innovative ideas","To provide creators with time to profit from new ideas and recover development costs","To limit the scope of intellectual property laws"],"answer":"C"},{"id":140,"q":"Which form of intellectual property protection is especially valuable for preserving unique manufacturing processes and business plans?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"C"},{"id":141,"q":"Why might a business choose to license or sell its intellectual property?","options":["To eliminate competition","To share profits with competitors","To generate additional revenue","To protect ideas from imitation"],"answer":"C"},{"id":142,"q":"What type of intellectual property protects original creative works of authors and composers?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"A"},{"id":143,"q":"What does a trademark signify?","options":["A unique manufacturing processes","Exclusive ownership of an idea","The source of goods and their distinction from others","The registration of a new company"],"answer":"C"},{"id":144,"q":"What does a trade secret protect?","options":["The idea behind a product","The form in which a creative work appears","A unique manufacturing processes","Knowledge kept secret for business advantage"],"answer":"D"},{"id":145,"q":"What is the primary difference between patents and trade secrets?","options":["Patents are disclosed to the public, while trade secrets are not.","Patents are only used in technology-based industries.","Patents protect creative works, while trade secrets protect product designs.","Patents grant exclusive rights for a fixed period, while trade secrets rely on confidentiality."],"answer":"D"},{"id":146,"q":"What type of intellectual property focuses on the exclusive right to reproduce creative works and prepare derivative versions?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"A"},{"id":147,"q":"What is the primary purpose of copyright protection?","options":["To prevent the creation of new works","To encourage imitation of creative works","To give creators the sole right to publish and sell their work","To promote the use of copyrighted materials by others"],"answer":"C"},{"id":148,"q":"Which type of intellectual property protection gives inventors exclusive rights over the use of their inventions?","options":["Copyright","Patent","Trade secret","Trademark"],"answer":"B"},{"id":149,"q":"What is the legal term for the violation of copyright?","options":["Infringement","Plagiarism","Counterfeiting","Dissemination"],"answer":"A"},{"id":150,"q":"What is the key distinction between patents and copyrights?","options":["Patents protect the expression of an idea, while copyrights protect the application of an ide","Patents protect original creative works, while copyrights protect inventions.","Patents are renewable, while copyrights expire.","Patents protect the application of an idea, while copyrights protect the expression of an ide"],"answer":"D"},{"id":151,"q":"Which international organization is Nigeria a member of in relation to intellectual property?","options":["World Health Organization","International Monetary Fund","World Trade Organization","United Nations Educational, Scientific and Cultural Organization"],"answer":"C"},{"id":152,"q":"What form of intellectual property covers the protection of original creative works such as books, musical compositions, and architecture?","options":["Patent","Trademark","Trade secret","Copyright"],"answer":"D"},{"id":153,"q":"What is the purpose of the Nigerian Copyright Commission?","options":["To create new copyright laws","To enforce patent rights","To launch advertising campaigns for copyrighted works","To take its mandate seriously and enforce copyright laws"],"answer":"D"},{"id":154,"q":"What factor may militate against effective copyright protection in Nigeria, according to Professor Uche Ewelukwa Ofodile?","options":["High levels of public consultation during law adoption","Lack of popular support for copyright laws","Extensive economic assessment of the costs and benefits of protection","Overemphasis on protecting the public domain over private rights"],"answer":"B"},{"id":155,"q":"What does the Paris Convention for the Protection of Industrial Property focus on?","options":["Copyright protection","Trademark protection","Industrial design protection","Protection of intellectual property rights"],"answer":"D"},{"id":156,"q":"Which of the following is NOT a main form of intellectual property rights?","options":["Copyright","Patent","Trade freedom","Trademark"],"answer":"D"},{"id":157,"q":"What does the term \"infringement\" refer to in the context of copyright?","options":["A legal device for protecting intellectual property","The process of obtaining a copyright","Violation of copyright protection rights","The process of registering a patent"],"answer":"C"},{"id":158,"q":"What distinguishes copyright from patents and trademarks?","options":["Copyright protects the expression of an idea, while patents protect original creative works.","Copyright is used to prevent competitors from benefiting from an individual`s or firm`s ideas.","Copyright protects tangible products, while patents protect intangible concepts.","Copyright protects the form in which an idea appears, while patents protect the application of an ide"],"answer":"D"},{"id":159,"q":"What is the role of intellectual property lawyers in relation to copyright?","options":["Creating original works for clients","Selling and licensing intellectual property rights","Advising on the protection and enforcement of intellectual property rights","Auditing and monitoring copyright legislation"],"answer":"C"},{"id":160,"q":"Which factor is identified by Professor Uche Ewelukwa Ofodile as contributing to the lack of effective copyright protection in Nigeria?","options":["Extensive public awareness campaigns","Inclusion of intellectual property courses in law school curricula","Efficient customs enforcement","Corruption and weak customs enforcement"],"answer":"D"},{"id":161,"q":"What type of intellectual property protection is granted to an inventor for a fixed period, usually up to 20 years?","options":["Copyright","Trade secret","Patent","Trademark"],"answer":"C"},{"id":162,"q":"What is the primary purpose of intellectual property law?","options":["To restrict access to creative works","To encourage imitation and replication of ideas","To protect the interests of the consuming public","To encourage innovation by granting creators time to profit from their new ideas and recover development costs"],"answer":"D"},{"id":163,"q":"What is the significance of \"reciprocal extension of protection\" in copyright law?","options":["It grants exclusive rights to copyright holders.","It promotes the use of copyrighted materials by others.","It ensures that copyrighted works are distributed internationally.","It`s a miscellaneous topic covered by copyright law to ensure global protection of creative works."],"answer":"D"},{"id":164,"q":"Which intellectual property type protects symbols, words, or designs used to indicate the source of goods?","options":["Copyright","Trade secret","Patent","Trademark"],"answer":"D"},{"id":165,"q":"What is the main reason for developing strategies to protect intellectual property (IP) within a business?","options":["To promote collaboration with competitors","To create public awareness of the IP","To safeguard the products, processes, and creative inputs that generate business profits","To make the IP public knowledge for increased recognition"],"answer":"C"},{"id":166,"q":"What is the first step in a protection strategy for intellectual property?","options":["Selling the IP to a competitor","Demonstrating ownership of the IP","Keeping the IP a secret","Registering the IP"],"answer":"D"},{"id":167,"q":"Which of the following is NOT a type of intellectual property protection available?","options":["Patents","Trade secrets","Business licenses","Registered designs"],"answer":"D"},{"id":168,"q":"What is the purpose of a confidentiality or non-disclosure agreement in protecting intellectual property?","options":["To grant exclusive rights to the IP holder","To demonstrate ownership of the IP","To establish the time, date, and place of IP disclosure","To make the IP public knowledge"],"answer":"C"},{"id":169,"q":"Which step helps demonstrate ownership of an intellectual property idea?","options":["Creating multiple prototypes","Filing a lawsuit against potential infringers","Writing a detailed description of the idea and making copies","Mailing a sealed envelope with original documents describing the idea by registered mail"],"answer":"D"},{"id":170,"q":"What action should you take if you want to ensure that your idea is not infringing someone else`s IP?","options":["Discuss your idea openly to gather feedback","Apply for IP protection immediately","Search the IP Nigerian website to check for similar products covered by patents or trademarks","Keep your idea a secret and avoid any research"],"answer":"C"},{"id":171,"q":"Which type of IP protection involves describing your creation in detail to distinguish it from similar products?","options":["Copyright","Trademark","Patent","Trade secret"],"answer":"C"},{"id":172,"q":"What is the purpose of registering your IP through a patent attorney or an intellectual property lawyer?","options":["To gain immediate public recognition for your IP","To prevent others from using your IP","To describe your IP in minute detail for patent application","To establish ownership of your IP"],"answer":"D"},{"id":173,"q":"Why might it be necessary to use more than one type of IP protection for your creation?","options":["To confuse potential infringers","To increase the overall value of the IP","Different IP rights provide varying levels of protection, so more than one type might be needed to fully protect the creation","To discourage potential infringers from pursuing similar ideas"],"answer":"C"},{"id":174,"q":"What is the primary purpose of registering intellectual property (IP)?","options":["To increase public awareness of the IP","To prevent competitors from using similar ideas","To establish a legal framework for IP theft","To secure legal rights and protection for the IP"],"answer":"D"},{"id":175,"q":"Which of the following types of intellectual property protection involves protecting original creative works?","options":["Patents","Trademarks","Copyright","Trade secrets"],"answer":"C"},{"id":176,"q":"Why is it important to keep your intellectual property idea a secret before registering it?","options":["To prevent competitors from selling a similar product","To make your idea public knowledge for collaboration","To maintain a sense of mystery around your product","To avoid putting your business at risk and to ensure you have exclusive rights to the idea"],"answer":"D"},{"id":177,"q":"What is the purpose of mailing a sealed envelope with original documents describing your idea by registered mail?","options":["To prove that you are the first to create the idea","To receive feedback from potential partners","To get the idea patented quickly","To establish evidence of the time, date, and place of original thought"],"answer":"D"},{"id":178,"q":"Why is searching the IP Nigerian website important when protecting your intellectual property?","options":["To find potential partners for collaboration","To make your IP public knowledge for marketing purposes","To ensure that your idea is not infringing someone else`s IP","To demonstrate ownership of your IP to potential investors"],"answer":"D"},{"id":179,"q":"What is the main purpose of a confidentiality or non-disclosure agreement when discussing your idea with others?","options":["To prevent anyone from using or discussing the idea","To create a legally binding partnership agreement","To secure a loan for the development of the idea","To ensure that the person you`re disclosing the idea to keeps it confidential and doesn`t use it without permission"],"answer":"D"},{"id":180,"q":"What step should you take to demonstrate that an idea is yours when trying to protect your intellectual property?","options":["Create a website showcasing the idea","Share the idea openly on social media platforms","Make copies of the original documents and keep them at home","Write down the details of the idea, draw a picture, and mail it in a sealed envelope by registered mail"],"answer":"D"},{"id":181,"q":"Why is it important to consider multiple types of intellectual property protection for your creation?","options":["To increase the overall value of the creation","To ensure that no one else can use the idea","Different types of IP protection offer different levels of security, so using more than one type can provide comprehensive protection","To make the registration process faster and more efficient"],"answer":"C"},{"id":182,"q":"What is the relationship between technology and entrepreneurship?","options":["Technology is an independent entity that does not impact entrepreneurship","Entrepreneurship is the driving force behind technology development","Technology and entrepreneurship are tightly related, with technology being a means to an end","Entrepreneurship is a result of technological advancements"],"answer":"C"},{"id":183,"q":"What analogy does the GENS 202 material use to emphasize the importance of entrepreneurs understanding and using technology?","options":["Athlete and coach relationship","Chef and sous chef relationship","Musician and recording engineer relationship","Artist and art collector relationship"],"answer":"C"},{"id":184,"q":"Why is it important for entrepreneurs to be open and inquisitive about technology?","options":["To gain popularity among tech-savvy consumers","To compete with other entrepreneurs in the technology industry","To leverage technology in order to achieve their goals more quickly","To become experts in technology development"],"answer":"C"},{"id":185,"q":"What does the author of the GENS 202 material mean by stating that \"Technology is an accelerator\"?","options":["Technology speeds up the process of decision-making","Technology is the end goal of entrepreneurial endeavors","Technology accelerates the success of ideas when used effectively","Technology accelerates only bad ideas toward failure"],"answer":"C"},{"id":186,"q":"What is the primary message conveyed in the analogy of the musician and the recording studio?","options":["Entrepreneurs need to become engineers to create technology","Technology and entrepreneurship are separate entities","Entrepreneurs should focus solely on their core principles","Entrepreneurs must be able to effectively communicate their vision to technical experts"],"answer":"C"},{"id":187,"q":"How has computer technology impacted various sectors like education and health care?","options":["It has led to reduced longevity in many societies","It has contributed to the need for more labor in factories","It has made technological advancements irrelevant in these sectors","It has had an enormous impact by improving education and health care"],"answer":"D"},{"id":188,"q":"What is the downside to technological progress mentioned in the GENS 202 material?","options":["Increased reliance on labor in factories","The destruction of the human race due to nuclear weapons","The lack of innovation in developing countries","Pollution, environmental problems, and health-related issues"],"answer":"D"},{"id":189,"q":"Why is the transfer of technology important in both industrialized and developing countries?","options":["It leads to lower industrial capability and competitiveness","It helps industrialized countries establish dominance over developing countries","It allows countries to rely on self-sufficiency rather than global cooperation","It helps in attaining high industrial capability and competitiveness"],"answer":"D"},{"id":190,"q":"What does the example of Gillette and Wilkinson demonstrate?","options":["Gillette`s reluctance to share technology with Wilkinson","Wilkinson`s inability to effectively use Gillette`s technology","The importance of marketing superior products","The negative impact of technology transfer on a business"],"answer":"C"},{"id":191,"q":"What types of technology transfer have had a significant impact on developing countries?","options":["Political and economic technology transfers","Cultural and geographic technology transfers","Agricultural and health care technology transfers","Educational and entertainment technology transfers"],"answer":"C"},{"id":192,"q":"What is the core definition of technology?","options":["The process of generating ideas for new products","The technique for converting inputs to outputs in a specific task","The ability to communicate effectively using digital tools","The study of the natural world and its phenomena"],"answer":"B"},{"id":193,"q":"What distinguishes hard technology from soft technology?","options":["Hard technology involves physical products, while soft technology involves intangible concepts","Hard technology focuses on software development, while soft technology focuses on hardware design","Hard technology is capital-intensive, while soft technology is labor-intensive","Hard technology includes machinery and equipment, while soft technology includes management know- how and administrative techniques"],"answer":"D"},{"id":194,"q":"How has technology transformed various aspects of modern life?","options":["It has made life simpler and more stagnant","It has only had a significant impact on the economy","It has revolutionized consumer habits, education, and various other areas","It has primarily affected the character of political institutions"],"answer":"C"},{"id":195,"q":"Why is it crucial for organizations to stay abreast of changes in the technological environment?","options":["To maintain a traditional approach to business operations","To resist any competition from other organizations","To anticipate and counteract competition, and incorporate new designs into products","To avoid any negative impact of technological progress"],"answer":"C"},{"id":196,"q":"What is the negative consequence of not keeping up with technological advancements?","options":["Decreased reliance on capital-intensive technologies","Inability to compete with other organizations","Reduced emphasis on the development of labor-intensive technologies","Failure to incorporate new and innovative designs into products"],"answer":"D"},{"id":197,"q":"What is the primary message conveyed through the example of Gillette and Wilkinson Sword Blades?","options":["Sharing technology with other companies is always beneficial","Technology transfer is essential for business success","Failing to market a superior product can result in missed opportunities","Manufacturers should prioritize the development of garden tools over other products"],"answer":"C"},{"id":198,"q":"What is the significance of technology transfer for developing countries?","options":["It results in decreased reliance on agricultural productivity","It leads to reduced infant mortality rates and improved health care","It is primarily focused on introducing manufacturing technologies","It has no impact on the living conditions of the majority of the population"],"answer":"B"},{"id":199,"q":"What does the term \"capital-intensive\" mean in the context of technology?","options":["It refers to the cost of acquiring technology","It signifies the level of complexity in using technology","It represents the heavy reliance on labor for technology production","It indicates the use of a highly advanced technology that requires substantial capital investment"],"answer":"D"},{"id":200,"q":"How does technology contribute to economic development?","options":["By isolating countries from the global market","By causing inflation and economic instability","By reducing the need for international communication","By enabling the transfer of knowledge and improving industrial capability"],"answer":"D"},{"id":201,"q":"What is the role of multinational corporations in technology transfer?","options":["They hinder technology transfer by monopolizing resources","They invest abroad to expand production, marketing, and research activities, facilitating technology transfer","They primarily focus on exporting technology from developing to industrialized countries","They impede technology transfer by limiting their operations to a single country"],"answer":"B"},{"id":202,"q":"What does \"soft technology\" refer to?","options":["Technology that is easily breakable and fragile","Technology that is still in the experimental phase","Management know-how, finance, marketing, and administrative techniques","Technology that involves intricate mechanical components"],"answer":"C"},{"id":203,"q":"Why is staying updated with technology trends important for entrepreneurs?","options":["To develop a deep expertise in technical skills","To impress potential investors and partners","To align technology with their business goals and leverage it for success","To ensure their products have the latest user interfaces"],"answer":"C"},{"id":204,"q":"What role does technology play in the relationship between entrepreneurship and nature?","options":["It disconnects entrepreneurs from nature and reality","It enhances the control that entrepreneurs have over nature and their environment","It replaces nature entirely, making it irrelevant for entrepreneurship","It reduces the need for entrepreneurship due to technological advancements"],"answer":"B"},{"id":205,"q":"What is the primary purpose of technology in entrepreneurship, according to Jim Collins?","options":["To replace human labor and reduce costs","To accelerate the development of innovative products","To serve as a means to an end, helping entrepreneurs achieve their goals more quickly","To serve as a standalone goal for entrepreneurs to pursue"],"answer":"C"},{"id":206,"q":"What concept does the word \"technology\" originally relate to?","options":["The concept of invention and creation","The idea of controlling nature and making changes","The notion of competition and rivalry","The concept of cultural exchange and globalization"],"answer":"D"}];
-
-        const EXAM_SIZE = 40;
-        const EXAM_MINUTES = 30;
-
-        let examQuestions = [];
-        let answers = [];
-        let currentQuestionIndex = 0;
-        let timerSeconds = EXAM_MINUTES * 60;
-        let timerInterval = null;
-
-        window.startExam = () => {
-            // Shuffle and pick 40
-            const shuffled = [...ALL_QUESTIONS].sort(() => 0.5 - Math.random());
-            examQuestions = shuffled.slice(0, EXAM_SIZE);
-            answers = new Array(EXAM_SIZE).fill(null);
-            currentQuestionIndex = 0;
-            timerSeconds = EXAM_MINUTES * 60;
-            
-            showView('exam');
-            renderPalette();
-            renderQuestion();
-            
-            clearInterval(timerInterval);
-            updateTimerDisplay();
-            timerInterval = setInterval(() => {
-                timerSeconds--;
-                updateTimerDisplay();
-                if(timerSeconds <= 0) {
-                    clearInterval(timerInterval);
-                    alert("Time is up! Submitting examination.");
-                    submitExam();
-                }
-            }, 1000);
+    userData=snap?.exists()
+      ? snap.data()
+      : {
+          name:user.displayName||"Student",
+          email:user.email,
+          referralCode:"-----",
+          totalreferral:0
         };
 
-        function updateTimerDisplay() {
-            const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
-            const s = (timerSeconds % 60).toString().padStart(2, '0');
-            const display = document.getElementById('timer-display');
-            display.innerText = `${m}:${s}`;
-            if (timerSeconds <= 300) display.classList.add('text-red-300'); // Warning color
-        }
+    await renderDashboard();
+    showView("dashboardView");
+  }catch(err){
+    console.error("Dashboard load error:",err);
+    toast("Could not load your dashboard. Please refresh and try again.");
+  }
+});
 
-        const renderPalette = () => {
-            const container = document.getElementById('palette-container');
-            container.innerHTML = '';
-            
-            examQuestions.forEach((_, idx) => {
-                const btn = document.createElement('div');
-                const isAnswered = answers[idx] !== null;
-                const isCurrent = idx === currentQuestionIndex;
-                
-                btn.className = `palette-btn ${isAnswered ? 'palette-answered' : 'palette-unanswered'} ${isCurrent ? 'palette-active' : ''}`;
-                btn.innerText = idx + 1;
-                btn.onclick = () => {
-                    currentQuestionIndex = idx;
-                    renderPalette();
-                    renderQuestion();
-                };
-                container.appendChild(btn);
-            });
-        };
+async function loadReferralCount(){
+  const code=userData?.referralCode;
+  if(!code || code === "-----"){
+    $("refCount").textContent="0";
+    return 0;
+  }
 
-        window.renderQuestion = () => {
-            const q = examQuestions[currentQuestionIndex];
-            
-            document.getElementById('question-header').innerText = `Question ${currentQuestionIndex + 1} of ${EXAM_SIZE}`;
-            document.getElementById('q-text').innerText = q.q;
-            
-            const optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
-            
-            q.options.forEach((opt, optIdx) => {
-                const letter = String.fromCharCode(65 + optIdx); // A, B, C, D
-                const isChecked = answers[currentQuestionIndex] === letter;
-                
-                const optDiv = document.createElement('label');
-                optDiv.className = `flex items-start p-3 border rounded cursor-pointer transition ${isChecked ? 'bg-green-50 border-jamb-green' : 'border-gray-300 hover:bg-gray-50'}`;
-                
-                optDiv.innerHTML = `
-                    <input type="radio" name="current_q" value="${letter}" ${isChecked ? 'checked' : ''} 
-                           onchange="selectAnswer('${letter}')"
-                           class="mt-1 mr-4">
-                    <span class="text-gray-800 font-medium leading-relaxed"><span class="font-bold mr-2">${letter}.</span> ${opt}</span>
-                `;
-                optionsContainer.appendChild(optDiv);
-            });
+  try{
+    const q=query(
+      collection(db,"referrals"),
+      where("referrerCode","==",code.toUpperCase())
+    );
+    const snap=await getDocs(q);
+    $("refCount").textContent=String(snap.size);
+    return snap.size;
+  }catch(err){
+    console.error("Referral count error:",err);
+    $("refCount").textContent="0";
+    return 0;
+  }
+}
 
-            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
-            document.getElementById('btn-next').disabled = currentQuestionIndex === EXAM_SIZE - 1;
-        };
+async function renderDashboard(){
+  $("welcomeName").textContent=`Welcome, ${userData?.name || currentUser?.displayName || "Student"} 👋`;
+  $("navUser").textContent=userData?.name || currentUser?.email || "";
+  $("myCode").textContent=userData?.referralCode || "-----";
+  $("refCount").textContent="…";
+  await loadReferralCount();
+}
 
-        window.selectAnswer = (letter) => {
-            answers[currentQuestionIndex] = letter;
-            renderPalette();
-            // Automatically select option without jumping to next question to mimic standard CBT behavior
-        };
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
 
-        window.prevQuestion = () => { 
-            if(currentQuestionIndex > 0) { 
-                currentQuestionIndex--; 
-                renderPalette(); renderQuestion(); 
-            } 
-        };
-        
-        window.nextQuestion = () => { 
-            if(currentQuestionIndex < EXAM_SIZE - 1) { 
-                currentQuestionIndex++; 
-                renderPalette(); renderQuestion(); 
-            } 
-        };
+function startExam(){
+  stopTimer();
+  examQuestions=shuffle(QUESTIONS).slice(0,EXAM_SIZE);
+  answers=new Array(EXAM_SIZE).fill(null);
+  currentPage=0;
+  timerSeconds=EXAM_MINUTES*60;
+  examStartedAt=Date.now();
+  renderExam();
+  startTimer();
+  showView("examView");
+}
 
-        window.submitExam = () => {
-            if(timerSeconds > 0) {
-                const unanswered = answers.filter(a => a === null).length;
-                if(unanswered > 0) {
-                    if(!confirm(`You still have ${unanswered} unanswered questions. Are you sure you want to submit?`)) return;
-                } else {
-                    if(!confirm("Are you sure you want to submit your examination?")) return;
-                }
-            }
-            
-            clearInterval(timerInterval);
-            let score = 0;
-            
-            examQuestions.forEach((q, idx) => {
-                if(answers[idx] === q.answer) score++;
-            });
+$("startExamBtn").onclick=startExam;
+$("retryBtn").onclick=startExam;
+$("dashboardBtn").onclick=()=>{
+  stopTimer(); renderDashboard(); showView("dashboardView");
+};
 
-            document.getElementById('result-score').innerText = `${score}/${EXAM_SIZE}`;
-            document.getElementById('result-percentage').innerText = `${((score/EXAM_SIZE)*100).toFixed(1)}%`;
-            showView('review');
-        };
-    </script>
+function startTimer(){
+  updateTimer();
+  timerInterval=setInterval(()=>{
+    timerSeconds--;
+    updateTimer();
+    if(timerSeconds<=0){
+      stopTimer();
+      toast("Time is up. Submitting your exam…");
+      setTimeout(submitExam,350);
+    }
+  },1000);
+}
+function stopTimer(){
+  if(timerInterval){clearInterval(timerInterval);timerInterval=null;}
+}
+function updateTimer(){
+  const min=String(Math.max(0,Math.floor(timerSeconds/60))).padStart(2,"0");
+  const sec=String(Math.max(0,timerSeconds%60)).padStart(2,"0");
+  $("timer").innerHTML=`⏱ <span>${min}:${sec}</span>`;
+  $("timer").classList.toggle("danger",timerSeconds<=300);
+}
+
+function renderExam(){
+  const totalPages=Math.ceil(EXAM_SIZE/PAGE_SIZE);
+  const start=currentPage*PAGE_SIZE;
+  const end=Math.min(start+PAGE_SIZE,EXAM_SIZE);
+  $("questionList").innerHTML=examQuestions.slice(start,end).map((q,local)=>{
+    const index=start+local;
+    return `
+      <article class="question-card glass" id="question-${index}">
+        <div class="question-head"><span class="q-number">QUESTION ${index+1} OF ${EXAM_SIZE}</span><span class="kicker">${q.id} from bank</span></div>
+        <div class="question-text">${escapeHtml(q.q)}</div>
+        <div class="options">
+          ${q.options.map((opt,j)=>{
+            const letter="ABCD"[j];
+            const selected=answers[index]===letter;
+            return `<button class="option ${selected?"selected":""}" data-index="${index}" data-answer="${letter}">
+              <span class="option-letter">${letter}</span><span>${escapeHtml(opt)}</span>
+            </button>`;
+          }).join("")}
+        </div>
+      </article>`;
+  }).join("");
+
+  document.querySelectorAll(".option").forEach(btn=>{
+    btn.onclick=()=>{
+      answers[Number(btn.dataset.index)]=btn.dataset.answer;
+      renderExam();
+    };
+  });
+
+  $("prevPage").disabled=currentPage===0;
+  $("nextPage").disabled=currentPage===totalPages-1;
+  $("pageButtons").innerHTML=Array.from({length:totalPages},(_,i)=>
+    `<button class="page-btn ${i===currentPage?"active":""}" data-page="${i}">${i+1}</button>`
+  ).join("");
+  document.querySelectorAll(".page-btn").forEach(b=>b.onclick=()=>{currentPage=Number(b.dataset.page);renderExam();});
+
+  const answered=answers.filter(Boolean).length;
+  $("answeredCount").textContent=`${answered}/${EXAM_SIZE}`;
+  $("progressBar").style.width=`${(answered/EXAM_SIZE)*100}%`;
+
+  $("paletteGrid").innerHTML=examQuestions.map((q,i)=>
+    `<button class="pal ${answers[i]?"answered":"unanswered"} ${i>=start&&i<end?"current":""}" data-q="${i}">${i+1}</button>`
+  ).join("");
+  document.querySelectorAll(".pal").forEach(b=>b.onclick=()=>{
+    const index=Number(b.dataset.q);
+    currentPage=Math.floor(index/PAGE_SIZE);
+    renderExam();
+    setTimeout(()=>document.getElementById(`question-${index}`)?.scrollIntoView({behavior:"smooth",block:"center"}),50);
+  });
+}
+
+$("prevPage").onclick=()=>{if(currentPage>0){currentPage--;renderExam();window.scrollTo({top:0,behavior:"smooth"});}};
+$("nextPage").onclick=()=>{if(currentPage<Math.ceil(EXAM_SIZE/PAGE_SIZE)-1){currentPage++;renderExam();window.scrollTo({top:0,behavior:"smooth"});}};
+
+function submitExam(){
+  stopTimer();
+  let score=0;
+  examQuestions.forEach((q,i)=>{if(answers[i]===q.answer)score++;});
+  renderReview(score);
+  showView("reviewView");
+}
+
+$("submitExamBtn").onclick=()=>{
+  const unanswered=answers.filter(x=>!x).length;
+  if(unanswered>0){
+    const ok=confirm(`You have ${unanswered} unanswered question${unanswered===1?"":"s"}. Submit anyway?`);
+    if(!ok)return;
+  }
+  submitExam();
+};
+
+function renderReview(score){
+  $("scoreValue").textContent=`${score}/${EXAM_SIZE}`;
+  const deg=(score/EXAM_SIZE)*360;
+  $("scoreRing").style.background=`conic-gradient(var(--primary) ${deg}deg,#222b43 ${deg}deg)`;
+  $("scoreSummary").textContent=`You answered ${answers.filter(Boolean).length} of ${EXAM_SIZE} questions. Score: ${score} (${Math.round(score/EXAM_SIZE*100)}%).`;
+
+  $("reviewList").innerHTML=examQuestions.map((q,i)=>{
+    const user=answers[i];
+    const correct=q.answer;
+    return `<article class="review-item glass">
+      <div class="review-q">Q${i+1}. ${escapeHtml(q.q)}</div>
+      ${q.options.map((opt,j)=>{
+        const letter="ABCD"[j];
+        const cls=letter===correct?"correct":(letter===user&&user!==correct?"wrong":"");
+        return `<div class="review-option ${cls}"><strong>${letter}.</strong> ${escapeHtml(opt)} ${letter===correct?"✓":""}</div>`;
+      }).join("")}
+      <div class="review-note">${user?`Your answer: ${user}.`:"Not answered."} Correct answer: ${correct}.</div>
+    </article>`;
+  }).join("");
+}
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+</script>
 </body>
 </html>
